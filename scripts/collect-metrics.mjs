@@ -52,10 +52,29 @@ function packageCount(name) {
 }
 
 const core = 'dotfiles-core';
-if (!has(core)) {
+const osRepos = [
+  'dotfiles-MacBook',
+  'dotfiles-Windows',
+  'dotfiles-Kali',
+  'dotfiles-Fedora',
+  'dotfiles-Arch',
+  'dotfiles-openSUSE',
+  'dotfiles-Alpine',
+  'dotfiles-Gentoo',
+];
+
+// Bail (without overwriting the committed snapshot) unless the WHOLE fleet is
+// present. A partial checkout would silently commit under-counted metrics — the
+// opposite of this script's "tracks the real repos" promise. The Core zsh/ tree
+// must exist too, since every Core metric is read from it.
+const missing = [core, ...osRepos].filter((r) => !has(r));
+const coreZshMissing = has(core) && !existsSync(join(repoPath(core), 'zsh'));
+if (missing.length || coreZshMissing) {
+  const why = missing.length ? `missing repos: ${missing.join(', ')}` : `${core}/zsh not found`;
   console.warn(
-    `[collect-metrics] ${core} not found under ${root} — keeping the committed ` +
-      `${out.replace(webRepo + '/', '')} as-is. Set DOTFILES_ROOT to point at the repos.`
+    `[collect-metrics] ${why} under ${root} — keeping the committed ` +
+      `${out.replace(webRepo + '/', '')} as-is. Check out the full fleet beside this ` +
+      `repo, or set DOTFILES_ROOT to point at it.`
   );
   process.exit(0);
 }
@@ -83,16 +102,6 @@ const coreVersion = existsSync(versionFile)
   : null;
 
 // ── Per-repo package counts + CI presence ──────────────────────────────────
-const osRepos = [
-  'dotfiles-MacBook',
-  'dotfiles-Windows',
-  'dotfiles-Kali',
-  'dotfiles-Fedora',
-  'dotfiles-Arch',
-  'dotfiles-openSUSE',
-  'dotfiles-Alpine',
-  'dotfiles-Gentoo',
-];
 const packages = {};
 const ci = {};
 for (const name of [core, ...osRepos]) {
@@ -100,7 +109,8 @@ for (const name of [core, ...osRepos]) {
   const pc = packageCount(name);
   if (pc != null) packages[name] = pc;
   const wf = join(repoPath(name), '.github', 'workflows');
-  ci[name] = existsSync(wf) && readdirSync(wf).some((f) => f.endsWith('.yml'));
+  ci[name] =
+    existsSync(wf) && readdirSync(wf).some((f) => f.endsWith('.yml') || f.endsWith('.yaml'));
 }
 // Kali's offensive stack is a second list — surface it separately.
 const kaliOffensive = countMeaningful(
