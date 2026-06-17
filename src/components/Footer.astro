@@ -1,0 +1,77 @@
+---
+import { site, nav } from '../data/site';
+import { withBase } from '../lib/url';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__brand">
+      <a class="brand" href={withBase('/')}>
+        <span class="brand__glyph">~/</span><span>{site.name}</span>
+      </a>
+      <p class="muted">{site.tagline}</p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Footer">
+      {nav.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+      <a href={site.githubBase} target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
+  </div>
+  <div class="container site-footer__legal">
+    <span class="muted">© {year} {site.owner}. Built with Astro · Tokyo Night.</span>
+    <span class="muted text-mono">deployed via GitHub Pages</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding-block: 2.5rem 1.5rem;
+    margin-top: 2rem;
+    background: var(--tn-bg-dark);
+  }
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2rem;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .brand {
+    display: inline-flex;
+    gap: 0.15rem;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: #fff;
+  }
+  .brand__glyph {
+    color: var(--tn-purple);
+  }
+  .site-footer__brand p {
+    margin: 0.4rem 0 0;
+    font-size: 0.9rem;
+  }
+  .site-footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+  .site-footer__nav a {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .site-footer__nav a:hover {
+    color: #fff;
+  }
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    justify-content: space-between;
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+</style>

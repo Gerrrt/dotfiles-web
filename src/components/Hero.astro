@@ -1,0 +1,118 @@
+---
+import { site } from '../data/site';
+import { withBase } from '../lib/url';
+---
+
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      <span class="eyebrow">~/dotfiles · nine-repo ecosystem</span>
+      <h1>
+        One <span class="text-grad">Core</span>.<br />
+        Every machine.<br />
+        <span class="text-mono hero__cag">clone-and-go.</span>
+      </h1>
+      <p class="lead">
+        A portable, layered dotfiles system. A single vendored <strong>Core</strong> — zsh,
+        tmux, Neovim, git, starship, mise — shared across every box, with thin OS-native
+        layers per platform and an offensive role layer for Kali. Audited, benchmarked,
+        reproducible.
+      </p>
+
+      <div class="row hero__cta">
+        <a class="btn btn-primary" href={withBase('/getting-started')}>Get started →</a>
+        <a class="btn btn-ghost" href={withBase('/architecture')}>How it works</a>
+      </div>
+
+      <ul class="hero__stats">
+        <li><strong class="tone-purple">9</strong><span>repos</span></li>
+        <li><strong class="tone-blue">3</strong><span>layers</span></li>
+        <li><strong class="tone-green">1</strong><span>vendored Core</span></li>
+        <li><strong class="tone-cyan">0</strong><span>submodule flags</span></li>
+      </ul>
+    </div>
+
+    <div class="hero__terminal">
+      <div class="terminal">
+        <div class="terminal__bar">
+          <span class="terminal__dot terminal__dot--r"></span>
+          <span class="terminal__dot terminal__dot--y"></span>
+          <span class="terminal__dot terminal__dot--g"></span>
+          <span class="terminal__title">zsh — ~/dotfiles-MacBook</span>
+        </div>
+        <div class="terminal__body">
+          <div><span class="comment"># clone — Core is already vendored, no flags</span></div>
+          <div><span class="prompt">$</span><span class="out">git clone </span><span class="accent">…/dotfiles-MacBook</span><span class="out"> ~/df && cd ~/df</span></div>
+          <div><span class="prompt">$</span><span class="out">./bootstrap.sh </span><span class="accent">--links-only --dry-run</span></div>
+          <div><span class="out">  ✓ plan: 24 symlinks, 0 conflicts</span></div>
+          <div><span class="prompt">$</span><span class="out">./bootstrap.sh</span></div>
+          <div><span class="out">  ✓ Homebrew · brew bundle · symlinks</span></div>
+          <div><span class="prompt">$</span><span class="out">exec zsh</span></div>
+          <div><span class="path">~/df</span><span class="out"> on </span><span class="accent"> main</span><span class="out"> via  v22</span><span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(2.5rem, 7vw, 5rem) clamp(2.5rem, 6vw, 4rem);
+    overflow: hidden;
+  }
+  .hero__grid {
+    display: grid;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: center;
+  }
+  @media (min-width: 940px) {
+    .hero__grid {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+  }
+  .hero__cag {
+    color: var(--tn-cyan);
+  }
+  .hero__cta {
+    margin-top: 1.75rem;
+  }
+  .hero__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem 2.25rem;
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--border);
+  }
+  .hero__stats li {
+    display: flex;
+    flex-direction: column;
+  }
+  .hero__stats strong {
+    font-size: 1.9rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    line-height: 1;
+  }
+  .hero__stats span {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+  }
+  .hero__terminal {
+    perspective: 1400px;
+  }
+  .hero__terminal .terminal {
+    transition: transform 0.4s ease;
+  }
+  @media (min-width: 940px) {
+    .hero__terminal .terminal {
+      transform: rotateY(-6deg) rotateX(2deg);
+    }
+    .hero__terminal .terminal:hover {
+      transform: rotateY(0) rotateX(0);
+    }
+  }
+</style>

@@ -1,0 +1,112 @@
+---
+import type { Repo } from '../data/repos';
+import { layerMeta, statusMeta } from '../data/repos';
+import { site } from '../data/site';
+
+interface Props {
+  repo: Repo;
+}
+const { repo } = Astro.props;
+const layer = layerMeta[repo.layer];
+const status = statusMeta[repo.status];
+const isLive = repo.status === 'stable' || repo.status === 'beta';
+const href = `${site.githubBase}/${repo.name}`;
+const Tag = isLive ? 'a' : 'div';
+const linkProps = isLive ? { href, target: '_blank', rel: 'noopener' } : {};
+---
+
+<Tag class:list={['card repo-card', { 'repo-card--soon': !isLive }]} {...linkProps}>
+  <div class="repo-card__top">
+    <span class:list={['repo-card__layer', `tone-${layer.accent}`]}>{layer.label}</span>
+    <span class:list={['badge', `tone-${status.tone}`]}><span class="dot"></span>{status.label}</span>
+  </div>
+
+  <h3 class="repo-card__name text-mono">
+    {repo.icon && <span class:list={['repo-card__icon', `tone-${layer.accent}`]}>{repo.icon}</span>}
+    {repo.name}
+  </h3>
+  <p class="repo-card__blurb">{repo.blurb}</p>
+
+  <ul class="repo-card__tags">
+    {repo.highlights.map((h) => <li>{h}</li>)}
+  </ul>
+
+  {
+    isLive ? (
+      <span class="repo-card__link">View on GitHub ↗</span>
+    ) : (
+      <span class="repo-card__link muted">Not public yet</span>
+    )
+  }
+</Tag>
+
+<style>
+  .repo-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+  }
+  a.repo-card:hover {
+    color: inherit;
+  }
+  .repo-card--soon {
+    opacity: 0.74;
+  }
+  .repo-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+  .repo-card__layer {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .repo-card__name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.08rem;
+    color: #fff;
+    margin: 0 0 0.5rem;
+    word-break: break-word;
+  }
+  .repo-card__icon {
+    font-size: 1rem;
+  }
+  .repo-card__blurb {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  .repo-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0 0 1.1rem;
+    padding: 0;
+  }
+  .repo-card__tags li {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    background: var(--tn-bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.15rem 0.5rem;
+  }
+  .repo-card__link {
+    margin-top: auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--tn-cyan);
+  }
+  a.repo-card:hover .repo-card__link {
+    color: var(--tn-blue);
+  }
+</style>

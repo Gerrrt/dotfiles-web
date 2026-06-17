@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import { withBase } from '../lib/url';
+---
+
+<Base title="404 — Not found" description="That path doesn’t resolve.">
+  <section class="section">
+    <div class="container center notfound">
+      <div class="terminal notfound__term">
+        <div class="terminal__bar">
+          <span class="terminal__dot terminal__dot--r"></span>
+          <span class="terminal__dot terminal__dot--y"></span>
+          <span class="terminal__dot terminal__dot--g"></span>
+          <span class="terminal__title">zsh</span>
+        </div>
+        <div class="terminal__body" style="text-align:left;">
+          <div><span class="prompt">$</span><span class="out">cd {Astro.url.pathname}</span></div>
+          <div><span class="out">cd: no such file or directory: </span><span class="accent">404</span></div>
+          <div><span class="comment"># did you mean one of these?</span></div>
+          <div><span class="prompt">$</span><span class="out">ls ~/dotfiles</span><span class="cursor"></span></div>
+        </div>
+      </div>
+      <h1 style="margin-top:2rem;">Page not found</h1>
+      <p class="lead">That path doesn’t resolve. Let’s get you back on a known route.</p>
+      <div class="row" style="justify-content:center; margin-top:1.5rem;">
+        <a class="btn btn-primary" href={withBase('/')}>Home</a>
+        <a class="btn btn-ghost" href={withBase('/getting-started')}>Get started</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound {
+    max-width: 620px;
+    margin-inline: auto;
+  }
+  .notfound__term {
+    text-align: left;
+  }
+</style>

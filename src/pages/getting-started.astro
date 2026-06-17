@@ -1,0 +1,261 @@
+---
+import Base from '../layouts/Base.astro';
+import CommandBlock from '../components/CommandBlock.astro';
+import { platforms } from '../data/install';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Get Started"
+  description="Install the dotfiles ecosystem on macOS, Windows, Kali (WSL2), or Linux. Clone, preview with a dry run, then bootstrap."
+>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Getting started</span>
+        <h1>Install in three commands</h1>
+        <p class="lead">
+          Every repo follows the same shape: <strong>clone</strong>, optionally
+          <strong>dry-run</strong> to preview the symlink plan, then
+          <strong>bootstrap</strong>. Core is vendored, so a clone is self-contained — no
+          submodule flags. Pick your platform below.
+        </p>
+      </div>
+
+      <!-- prerequisites -->
+      <div class="card prereq">
+        <h3>Before you start</h3>
+        <ul>
+          <li><code>git</code> installed and your identity ready (name + email).</li>
+          <li><strong>macOS:</strong> Command Line Tools (the bootstrap installs Homebrew).</li>
+          <li><strong>Windows:</strong> PowerShell 7 (<code>pwsh</code>) and Developer Mode (or run elevated) so symlinks work.</li>
+          <li><strong>Kali:</strong> running under WSL2; engagement data is kept out of the repo by design.</li>
+        </ul>
+      </div>
+
+      <!-- platform tabs -->
+      <div class="tabs" id="install-tabs">
+        <div class="tabs__list" role="tablist" aria-label="Platform">
+          {
+            platforms.map((p, i) => (
+              <button
+                role="tab"
+                id={`tab-${p.id}`}
+                class:list={['tabs__tab', { active: i === 0 }]}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                aria-controls={`panel-${p.id}`}
+                data-tab={p.id}
+              >
+                {p.label}
+              </button>
+            ))
+          }
+        </div>
+
+        {
+          platforms.map((p, i) => (
+            <div
+              role="tabpanel"
+              id={`panel-${p.id}`}
+              class:list={['tabs__panel', { active: i === 0 }]}
+              aria-labelledby={`tab-${p.id}`}
+              hidden={i !== 0}
+              data-panel={p.id}
+            >
+              <div class="panel-head">
+                <div>
+                  <h2>{p.label}</h2>
+                  <p class="lead">{p.intro}</p>
+                </div>
+                {p.available ? (
+                  <a class="btn btn-ghost" href={`${site.githubBase}/${p.repo}`} target="_blank" rel="noopener">
+                    {p.repo} ↗
+                  </a>
+                ) : (
+                  <span class="badge tone-orange"><span class="dot" />In progress</span>
+                )}
+              </div>
+
+              <ol class="steps">
+                {p.steps.map((step) => (
+                  <li class="step">
+                    <h3 class="step__title">{step.title}</h3>
+                    {step.body && <p class="step__body">{step.body}</p>}
+                    {step.code && <CommandBlock code={step.code} lang={step.lang ?? 'bash'} />}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- updating core -->
+      <div class="card afterword">
+        <h3>Keeping Core current</h3>
+        <p>
+          Core is authored in <code>dotfiles-core</code> and vendored into every OS repo. To
+          pull the latest Core into a machine repo and re-wire links:
+        </p>
+        <CommandBlock
+          code={`git subtree pull --prefix=core https://github.com/Gerrrt/dotfiles-core main --squash
+./bootstrap.sh --links-only`}
+        />
+        <p class="muted" style="margin-bottom:0;">
+          Maintainers can fan a Core change out to every OS repo at once with
+          <code>scripts/sync-core.sh</code> from <code>dotfiles-core</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .prereq {
+    margin-bottom: 2.5rem;
+  }
+  .prereq h3 {
+    margin-top: 0;
+  }
+  .prereq ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--text-dim);
+  }
+  .prereq li {
+    margin-bottom: 0.4rem;
+  }
+
+  .tabs__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.4rem;
+    background: var(--tn-bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+  .tabs__tab {
+    flex: 1 1 auto;
+    min-width: max-content;
+    padding: 0.6rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .tabs__tab:hover {
+    color: #fff;
+  }
+  .tabs__tab.active {
+    color: #10131f;
+    background: linear-gradient(135deg, var(--tn-blue), var(--tn-purple));
+  }
+  .tabs__panel {
+    animation: fade 0.25s ease;
+  }
+  .tabs__panel[hidden] {
+    display: none;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  .panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+  .panel-head h2 {
+    margin-bottom: 0.4rem;
+  }
+  .panel-head .lead {
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  .steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .step {
+    counter-increment: step;
+    position: relative;
+    padding-left: 3rem;
+  }
+  .step::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--tn-cyan);
+    background: var(--tn-bg-dark);
+    border: 1px solid var(--tn-border-bright);
+    border-radius: 999px;
+  }
+  .step__title {
+    font-size: 1.05rem;
+    margin: 0.25rem 0 0.4rem;
+  }
+  .step__body {
+    font-size: 0.92rem;
+    margin-bottom: 0.75rem;
+  }
+  .afterword {
+    margin-top: 3rem;
+  }
+  .afterword h3 {
+    margin-top: 0;
+  }
+  @media (max-width: 520px) {
+    .step {
+      padding-left: 2.5rem;
+    }
+  }
+</style>
+
+<script>
+  const root = document.getElementById('install-tabs');
+  if (root) {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-panel]'));
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.tab;
+        tabs.forEach((t) => {
+          const on = t === tab;
+          t.classList.toggle('active', on);
+          t.setAttribute('aria-selected', String(on));
+        });
+        panels.forEach((p) => {
+          const on = p.dataset.panel === id;
+          p.classList.toggle('active', on);
+          p.hidden = !on;
+        });
+      });
+    });
+  }
+</script>

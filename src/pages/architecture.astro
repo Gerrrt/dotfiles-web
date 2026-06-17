@@ -1,0 +1,270 @@
+---
+import Base from '../layouts/Base.astro';
+import CommandBlock from '../components/CommandBlock.astro';
+import { withBase } from '../lib/url';
+
+const loadOrder = [
+  ['tools', 'detection + single init point (zoxide/starship/atuin/mise) — loads first'],
+  ['ui', 'terminal-UX primitives (_core_err/ok/hint/confirm/spin), gum-aware'],
+  ['options', 'setopts + completion system (compinit, cached) + zstyles'],
+  ['history', 'HISTFILE/SIZE + history setopts + secret-ignore'],
+  ['aliases', 'modern-CLI aliases, each guarded by tools.zsh detection'],
+  ['git', 'curated OMZ-style git aliases + git_main_branch helper'],
+  ['functions', 'cross-OS shell functions (mkcd, extract, up, …)'],
+  ['fzf', 'fzf env + zle widgets (Ctrl-F/R, Alt-Z) + fif/fbr'],
+  ['bindings', 'vi-mode keybindings (zvm_after_init hook)'],
+  ['plugins', 'lightweight plugin loader + pinned plugin list'],
+  ['op', '1Password CLI helpers'],
+  ['maint / update', 'daily-maintenance surface + the up updater nudge'],
+  ['os', 'the OS-native layer (os/<platform>.zsh)'],
+  ['offensive', 'Kali only — engagement scaffolding'],
+  ['local', 'machine-specific overrides (untracked) — always wins'],
+];
+
+const comparisons = [
+  {
+    title: 'vs submodule',
+    body: 'Submodules store a pointer, so a fresh clone is empty until you run submodule update --init. Subtree vendors the actual files — every repo is self-contained and clone-and-go. Better for public portfolio repos.',
+  },
+  {
+    title: 'vs chezmoi',
+    body: 'chezmoi (one repo + per-OS templates) is the most DRY answer and the right move if you ever collapse nine repos into one. This system keeps the nine-repo portfolio; switching later is a content migration, not a rewrite, because Core is already plain and OS-agnostic.',
+  },
+];
+---
+
+<Base
+  title="Architecture"
+  description="The three-layer model behind the dotfiles ecosystem: a vendored Core, thin OS-native layers, and an offensive role layer — wired together by git subtree and a canonical zsh load order."
+>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Architecture</span>
+        <h1>One Core, vendored everywhere</h1>
+        <p class="lead">
+          The system is built on one decision repeated consistently: draw a hard boundary
+          between what is identical on every machine and what changes with the OS or the
+          operator. Get the boundary right and a single Core can serve nine machines with
+          zero special-casing.
+        </p>
+      </div>
+
+      <!-- the rule -->
+      <blockquote class="rule">
+        <p>If it changes when the <em>operating system</em> changes, it does <strong>not</strong> belong in Core.</p>
+        <p>If it changes when <em>you as an operator</em> change, it does <strong>not</strong> belong in Core.</p>
+        <p class="rule__punch">Everything left over is Core — and it lives in exactly one place.</p>
+      </blockquote>
+
+      <!-- layer table -->
+      <h2 class="mt">The three layers</h2>
+      <div class="layer-table">
+        <div class="layer-table__row layer-table__row--head">
+          <span>Layer</span><span>Lives in</span><span>Examples</span>
+        </div>
+        <div class="layer-table__row">
+          <span class="tone-purple text-mono">Core</span>
+          <span>this repo, vendored into each OS repo via <code>git subtree</code></span>
+          <span class="muted">zsh modules, tmux base, nvim, git/delta</span>
+        </div>
+        <div class="layer-table__row">
+          <span class="tone-blue text-mono">OS-native</span>
+          <span><code>dotfiles-&#123;MacBook,Windows,Fedora,Arch,…&#125;</code></span>
+          <span class="muted">package manager, clipboard shim, paths</span>
+        </div>
+        <div class="layer-table__row">
+          <span class="tone-red text-mono">Role / offensive</span>
+          <span><code>dotfiles-Kali</code></span>
+          <span class="muted">engagement scaffolding, C2, Impacket, wordlists</span>
+        </div>
+      </div>
+
+      <!-- how an OS repo consumes core -->
+      <h2 class="mt">How an OS repo consumes Core</h2>
+      <p>
+        Each machine repo vendors <code>dotfiles-core</code> under <code>core/</code> as a
+        git subtree. That physically copies Core in and commits it, so the repo clones and
+        works with no submodule flags — important, since these are public showcase repos
+        people will browse.
+      </p>
+      <CommandBlock
+        code={`# one-time, inside an OS repo:
+git subtree add --prefix=core https://github.com/Gerrrt/dotfiles-core main --squash
+
+# later, to pull Core updates down:
+git subtree pull --prefix=core https://github.com/Gerrrt/dotfiles-core main --squash`}
+      />
+      <p class="muted">
+        Maintainers fan a Core change out to every OS repo in one shot with
+        <code>scripts/sync-core.sh</code>, which prints the exact short SHA each repo
+        receives so a sync is traceable.
+      </p>
+
+      <!-- why subtree -->
+      <h2 class="mt">Why subtree (not submodule, not chezmoi)</h2>
+      <div class="grid grid-2">
+        {
+          comparisons.map((c) => (
+            <article class="card">
+              <h3>{c.title}</h3>
+              <p style="margin:0;">{c.body}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <!-- load order -->
+      <h2 class="mt">The canonical load order</h2>
+      <p>
+        Load order is load-bearing. <code>tools</code> initializes atuin (registering its
+        widget), <code>options</code> runs <code>compinit</code> (fzf-tab + carapace need
+        it), and <code>fzf</code> defines its widgets <em>before</em> <code>plugins</code>
+        loads zsh-vi-mode, whose init fires the keybinding hook in <code>bindings</code>.
+        Every OS repo’s <code>.zshrc</code> sources the chain in this order:
+      </p>
+      <ol class="load-order">
+        {
+          loadOrder.map(([name, desc], i) => (
+            <li>
+              <span class="load-order__n text-mono">{String(i + 1).padStart(2, '0')}</span>
+              <span class="load-order__name text-mono">{name}</span>
+              <span class="load-order__desc muted">{desc}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <!-- kali note -->
+      <div class="card kali-note">
+        <h3 class="tone-red">The Kali exception</h3>
+        <p>
+          Kali is the only repo that stacks three layers. Where every other repo’s loader
+          ends <code>… os local</code>, Kali inserts one more stage —
+          <code>… os offensive local</code> — for engagement scaffolding (scope-first
+          workspaces, an audit-trail <code>logshell</code>, NetExec/BloodHound CE helpers).
+          Engagement data never lives in the repo; it stays under
+          <code>~/engagements</code>, and every tool is for authorized engagements with
+          written rules of engagement only.
+        </p>
+      </div>
+
+      <div class="center" style="margin-top:3rem;">
+        <a class="btn btn-primary" href={withBase('/getting-started')}>Install it →</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .mt {
+    margin-top: 3.5rem;
+  }
+  .rule {
+    margin: 0 0 1rem;
+    padding: 1.5rem 1.75rem;
+    border-left: 3px solid var(--tn-purple);
+    background: linear-gradient(180deg, var(--tn-surface), var(--tn-bg-dark));
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .rule p {
+    margin: 0 0 0.5rem;
+    color: var(--text-dim);
+  }
+  .rule em {
+    color: var(--tn-cyan);
+    font-style: italic;
+  }
+  .rule__punch {
+    color: #fff !important;
+    font-weight: 600;
+    margin-top: 0.75rem !important;
+  }
+
+  .layer-table {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .layer-table__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.92rem;
+  }
+  .layer-table__row:first-child {
+    border-top: 0;
+  }
+  .layer-table__row--head {
+    background: var(--tn-bg-dark);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+  @media (min-width: 720px) {
+    .layer-table__row {
+      grid-template-columns: 0.8fr 1.6fr 1.4fr;
+      gap: 1rem;
+      align-items: center;
+    }
+  }
+
+  .load-order {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .load-order li {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 0.15rem 1rem;
+    align-items: center;
+    padding: 0.7rem 1.1rem;
+    border-top: 1px solid var(--border);
+  }
+  .load-order li:first-child {
+    border-top: 0;
+  }
+  .load-order li:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.012);
+  }
+  .load-order__n {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+  .load-order__name {
+    color: var(--tn-cyan);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .load-order__desc {
+    grid-column: 2;
+    font-size: 0.85rem;
+  }
+  @media (min-width: 720px) {
+    .load-order li {
+      grid-template-columns: 2.5rem 9rem 1fr;
+    }
+    .load-order__desc {
+      grid-column: auto;
+    }
+  }
+
+  .kali-note {
+    margin-top: 2rem;
+    border-left: 3px solid var(--tn-red);
+  }
+  .kali-note h3 {
+    margin-top: 0;
+  }
+  .kali-note p {
+    margin: 0;
+  }
+</style>

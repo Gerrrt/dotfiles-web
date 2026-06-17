@@ -1,0 +1,127 @@
+---
+import Base from '../layouts/Base.astro';
+import { changelog } from '../data/changelog';
+import { site } from '../data/site';
+
+const categoryTone: Record<string, string> = {
+  Added: 'green',
+  Changed: 'blue',
+  Fixed: 'cyan',
+  Security: 'red',
+};
+---
+
+<Base
+  title="Changelog"
+  description="What's new across the dotfiles ecosystem — a curated mirror of the per-repo CHANGELOG.md files."
+>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Changelog</span>
+        <h1>What’s new</h1>
+        <p class="lead">
+          A curated mirror of the per-repo changelogs. Core changes fan out to every OS repo
+          on the next <code>git subtree pull</code>, so a Core entry is a change every
+          machine receives. The canonical record lives in each repo’s
+          <code>CHANGELOG.md</code>.
+        </p>
+      </div>
+
+      <div class="changelog">
+        {
+          changelog.map((entry) => (
+            <article class="cl-entry">
+              <div class="cl-entry__head">
+                <h2 class="text-mono">
+                  <a href={`${site.githubBase}/${entry.repo}`} target="_blank" rel="noopener">
+                    {entry.repo}
+                  </a>
+                </h2>
+                <span class="badge tone-orange"><span class="dot" />{entry.version}</span>
+              </div>
+              {entry.summary && <p class="cl-entry__summary">{entry.summary}</p>}
+
+              <div class="cl-groups">
+                {entry.groups.map((g) => (
+                  <div class="cl-group">
+                    <h3 class:list={['cl-group__title', `tone-${categoryTone[g.category] ?? 'muted'}`]}>
+                      {g.category}
+                    </h3>
+                    <ul class="cl-list">
+                      {g.items.map((item) => (
+                        <li>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <p class="muted center" style="margin-top:2.5rem;">
+        Looking for the distro repos’ history? They’re rolling out from the Fedora template —
+        check back as each goes public.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .changelog {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .cl-entry {
+    padding: 1.75rem;
+    background: linear-gradient(180deg, var(--tn-surface), var(--tn-bg-dark));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .cl-entry__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .cl-entry__head h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  .cl-entry__summary {
+    font-size: 0.92rem;
+    margin-bottom: 1.5rem;
+    max-width: 75ch;
+  }
+  .cl-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .cl-group__title {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 0.6rem;
+  }
+  .cl-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cl-list li {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .cl-list li::marker {
+    color: var(--tn-comment);
+  }
+</style>

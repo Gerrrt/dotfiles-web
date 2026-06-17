@@ -1,0 +1,39 @@
+---
+// A copy-to-clipboard code block. `code` is the raw text; `lang` only tweaks the
+// shown prompt glyph. The copy button is wired by a global script in Base.astro.
+interface Props {
+  code: string;
+  lang?: 'bash' | 'powershell';
+  showPrompt?: boolean;
+}
+const { code, lang = 'bash', showPrompt = true } = Astro.props;
+const prompt = lang === 'powershell' ? 'PS>' : '$';
+const lines = code.split('\n');
+---
+
+<div class="codeblock">
+  <button class="copy" type="button" data-copy data-code={code} aria-label="Copy command">copy</button>
+  <pre><code>{lines.map((line, i) => {
+    const isComment = line.trimStart().startsWith('#');
+    return (
+      <span class="cb-line">
+        {showPrompt && !isComment && line.trim() !== '' && <span class="cb-prompt">{prompt} </span>}
+        <span class:list={['cb-text', { 'cb-comment': isComment }]}>{line}</span>
+        {i < lines.length - 1 ? '\n' : ''}
+      </span>
+    );
+  })}</code></pre>
+</div>
+
+<style>
+  .cb-prompt {
+    color: var(--tn-green);
+    user-select: none;
+  }
+  .cb-comment {
+    color: var(--tn-comment);
+  }
+  .cb-text {
+    color: var(--tn-fg);
+  }
+</style>

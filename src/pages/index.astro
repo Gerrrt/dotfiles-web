@@ -1,0 +1,260 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import RepoCard from '../components/RepoCard.astro';
+import CommandBlock from '../components/CommandBlock.astro';
+import { repos, layerMeta } from '../data/repos';
+import { withBase } from '../lib/url';
+
+const features = [
+  {
+    icon: '◆',
+    accent: 'purple',
+    title: 'Authored once, everywhere',
+    body: 'Core lives in one repo and is vendored into every OS repo via git subtree. No N-way reconciliation, no drift — edit once, sync out.',
+  },
+  {
+    icon: '⧉',
+    accent: 'blue',
+    title: 'Clone-and-go',
+    body: 'Subtree vendors the actual files, so a fresh clone just works. No submodule init, no flags. Perfect for public portfolio repos.',
+  },
+  {
+    icon: '⚡',
+    accent: 'cyan',
+    title: 'Same shell, every OS',
+    body: 'The zsh module chain loads in one canonical order on macOS, Linux, and WSL — PowerShell mirrors it. Muscle memory transfers everywhere.',
+  },
+  {
+    icon: '🛡',
+    accent: 'green',
+    title: 'Audited & benchmarked',
+    body: 'A manifest-driven audit gate, hermetic behavioral tests, pinned plugin SHAs, and a startup-perf budget keep every sync honest.',
+  },
+  {
+    icon: '◑',
+    accent: 'orange',
+    title: 'Three clean layers',
+    body: 'Core (identical everywhere), OS-native (changes with the OS), and Role (offensive scaffolding for Kali). Every file has exactly one home.',
+  },
+  {
+    icon: '⌘',
+    accent: 'red',
+    title: 'Discoverable by design',
+    body: 'core-help cheat sheets, core-doctor health checks, did-you-mean command handling, and first-party completions for every verb.',
+  },
+];
+
+const orderedRepos = [...repos];
+---
+
+<Base>
+  <Hero />
+
+  <!-- ===================================================== features -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Why it’s built this way</span>
+        <h2>A system, not a pile of config</h2>
+        <p class="lead">
+          Nine repositories, one philosophy: if it changes with the operating system it
+          isn’t Core; if it changes with you as an operator it isn’t Core. Everything left
+          over is Core — and it lives in exactly one place.
+        </p>
+      </div>
+
+      <div class="grid grid-3">
+        {
+          features.map((f) => (
+            <article class="card feature">
+              <span class:list={['feature__icon', `tone-${f.accent}`]}>{f.icon}</span>
+              <h3>{f.title}</h3>
+              <p>{f.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== layers -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">The three-layer model</span>
+        <h2>Core → OS-native → Role</h2>
+        <p class="lead">
+          Each layer answers a different question. Drawing the boundary precisely is what
+          lets one Core serve every machine without special-casing.
+        </p>
+      </div>
+
+      <div class="layers">
+        {
+          (['core', 'os', 'role'] as const).map((key, i) => {
+            const l = layerMeta[key];
+            const detail = {
+              core: 'zsh modules, tmux base, Neovim, git, starship, mise, clip. Vendored into every OS repo under core/.',
+              os: 'Package manager, paths, clipboard backend, OS tmux/git tweaks. One thin layer per platform.',
+              role: 'Engagement scaffolding, scope-first workflow, offensive tooling. Stacked only on the Kali node.',
+            }[key];
+            return (
+              <div class:list={['layer-row', `layer-row--${l.accent}`]}>
+                <div class="layer-row__index text-mono">0{i + 1}</div>
+                <div class="layer-row__main">
+                  <h3 class:list={[`tone-${l.accent}`]}>{l.label}</h3>
+                  <p>{detail}</p>
+                </div>
+                <div class="layer-row__meta muted">{l.desc}</div>
+              </div>
+            );
+          })
+        }
+      </div>
+
+      <div class="center" style="margin-top: 2.5rem;">
+        <a class="btn btn-ghost" href={withBase('/architecture')}>Read the full architecture →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== repos -->
+  <section class="section" id="repos">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">The fleet</span>
+        <h2>Repository map</h2>
+        <p class="lead">
+          Four repos are public and stable today; the distro family is rolling out from the
+          Fedora template. Each card links to its repo when it goes live.
+        </p>
+      </div>
+
+      <div class="grid grid-3">
+        {orderedRepos.map((repo) => <RepoCard repo={repo} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== install CTA -->
+  <section class="section section--alt">
+    <div class="container install-cta">
+      <div>
+        <span class="eyebrow">Try it</span>
+        <h2>Up and running in three commands</h2>
+        <p class="lead">
+          Pick your platform, clone, bootstrap. The installer is idempotent and ships a
+          dry-run so you can preview every change before it touches your machine.
+        </p>
+        <div class="row" style="margin-top:1.5rem;">
+          <a class="btn btn-primary" href={withBase('/getting-started')}>Full install guide →</a>
+        </div>
+      </div>
+      <div class="install-cta__code">
+        <CommandBlock
+          code={`git clone https://github.com/Gerrrt/dotfiles-MacBook ~/dotfiles-MacBook
+cd ~/dotfiles-MacBook
+./bootstrap.sh --links-only --dry-run   # preview, changes nothing
+./bootstrap.sh                          # provision + wire`}
+        />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .section--alt {
+    background: var(--tn-bg-dark);
+    border-block: 1px solid var(--border);
+  }
+  .feature {
+    height: 100%;
+  }
+  .feature__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 10px;
+    background: var(--tn-bg-dark);
+    border: 1px solid var(--border);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .feature h3 {
+    font-size: 1.1rem;
+  }
+  .feature p {
+    font-size: 0.92rem;
+    margin: 0;
+  }
+
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 880px;
+    margin-inline: auto;
+  }
+  .layer-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1.25rem;
+    align-items: start;
+    padding: 1.4rem 1.5rem;
+    background: linear-gradient(180deg, var(--tn-surface), var(--tn-bg-dark));
+    border: 1px solid var(--border);
+    border-left-width: 3px;
+    border-radius: var(--radius);
+  }
+  .layer-row--purple {
+    border-left-color: var(--tn-purple);
+  }
+  .layer-row--blue {
+    border-left-color: var(--tn-blue);
+  }
+  .layer-row--red {
+    border-left-color: var(--tn-red);
+  }
+  .layer-row__index {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-muted);
+  }
+  .layer-row__main h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.15rem;
+  }
+  .layer-row__main p {
+    margin: 0;
+    font-size: 0.92rem;
+  }
+  .layer-row__meta {
+    grid-column: 2;
+    font-size: 0.82rem;
+    font-family: var(--font-mono);
+  }
+  @media (min-width: 760px) {
+    .layer-row {
+      grid-template-columns: auto 1.4fr 1fr;
+      align-items: center;
+    }
+    .layer-row__meta {
+      grid-column: auto;
+      text-align: right;
+    }
+  }
+
+  .install-cta {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .install-cta {
+      grid-template-columns: 1fr 1.1fr;
+    }
+  }
+</style>
