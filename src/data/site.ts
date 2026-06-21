@@ -43,8 +43,8 @@ export function isValidRef(channel: string): boolean {
 // `channels` (newest first). Until then both stay at 'main' (unreleased) and the
 // switcher renders a static "rolling" pill instead of a dropdown.
 export const release = {
-  current: "v1.1.0",
-  channels: ["v1.1.0", "v1.0.0", "main"] as readonly string[],
+  current: "v1.2.0",
+  channels: ["v1.2.0", "v1.1.0", "v1.0.0", "main"] as readonly string[],
 } as const;
 
 // Fail the build LOUDLY on a malformed channel, at import time — not lazily when a
