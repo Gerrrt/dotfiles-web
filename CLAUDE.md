@@ -1,0 +1,27 @@
+# CLAUDE.md — dotfiles-web
+
+Project memory for Claude Code, auto-loaded every session. The system's
+source-of-truth rules live in [dotfiles-core](https://github.com/Gerrrt/dotfiles-core); this repo does **not**
+vendor `core/`.
+
+## What this repo is
+
+`dotfiles-web` is the **Showcase layer** of a ten-repo, three-layer dotfiles fleet
+(Core → OS-native → Role → Showcase): the public docs site. Built with **Astro**,
+themed in **Tokyo Night**, deployed to **GitHub Pages**. It *documents* the system
+rather than configuring a machine.
+
+## The rule that bites
+
+Because this site restates facts that live elsewhere — the repo count, the
+three-layer model, per-platform install commands — it is the easiest place for
+documentation to drift from reality. Treat the source-of-truth repos as canonical
+and keep the site in step. The `/doc-audit` routine in dotfiles-core checks exactly
+this cross-repo consistency; run it before publishing claims.
+
+## Where things are
+
+- `src/` — Astro pages + components (landing, getting-started, architecture, changelog)
+- `astro.config.mjs`, `package.json` — build config
+- `public/` — static assets
+- `scripts/` — site tooling (e.g. changelog mirroring)
