@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-06-18",
+  "generatedAt": "2026-06-23",
   "fleet": {
     "publicRepos": 9,
     "layers": 3,
     "loadOrderStages": 15
   },
   "core": {
-    "version": "1.0.0",
+    "version": "1.2.0",
     "sourcedModules": 13,
-    "zshLoc": 2905,
+    "zshLoc": 2933,
     "gitAliases": 57,
     "pinnedPlugins": 7,
-    "completions": 23
+    "completions": 26
   },
   "packages": {
-    "dotfiles-MacBook": 60,
+    "dotfiles-MacBook": 63,
     "dotfiles-Kali": 28,
     "dotfiles-Fedora": 31,
     "dotfiles-Arch": 36,
@@ -36,6 +36,31 @@
   },
   "changelog": [
     {
+      "repo": "dotfiles-core",
+      "version": "Unreleased",
+      "groups": [
+        {
+          "category": "Added",
+          "items": [
+            "Claude Code project memory + maintenance routines (CLAUDE.md, .claude/) — a root CLAUDE.md encoding the three-layer model, the \"is it Core?\" test, the manifest contract, and the load order so every Claude session reasons from the real rules. Three on-demand slash commands automate the judgment-heavy chores the audit can't: /doc-audit (prose-vs-reality drift across the fleet, via the doc-consistency subagent), /tool-scout (research the modern-CLI stack for tools worth adopting, via the tool-scout subagent), and /freshness-triage (review dependency-bump PRs against upstream changelogs). All report-first; none vendor out without a green make audit. CLAUDE.md added to the audit's repo-meta allowlist (.claude/ was already a prefix).",
+            "Scheduled maintenance bots (.github/workflows/claude-routines.yml) — run the /doc-audit and /tool-scout routines headless on a weekly cron (and on demand), filing findings as a deduplicated GitHub issue. The Claude Code CLI is installed from npm (pinned via CLAUDE_CODE_VERSION in scripts/tool-versions.env) — no third-party action, mirroring freshness.yml. Auth is a Claude subscription token (CLAUDE_CODE_OAUTH_TOKEN, from claude setup-token); inert until that secret is set (the workflow no-ops with a warning otherwise).",
+            "make release-notes + cliff.toml — git-cliff config + a Makefile target that drafts a GitHub Release body from Conventional Commits since the last release commit. Scoped dev-tooling (audit allowlist, not core.manifest, zero runtime cost); it does not generate CHANGELOG.md (that stays hand-curated and is promoted by scripts/release.sh). Surfaced by /tool-scout (issue #44).",
+            "aliases.md is now surfaced in the changelog — the cross-fleet aliases cheat sheet (Core + per-OS + offensive layers), previously shipped without an entry."
+          ]
+        },
+        {
+          "category": "Fixed",
+          "items": [
+            "freshness.yml opens its pin-bump PRs against the default branch, not the dispatched ref (GITHUB_REF_NAME), and uses a ref-independent concurrency group — so a manual run from a feature branch can't target the wrong base or race the cron.",
+            "aliases.md — corrected the myip expansion (it redirects stderr: curl -fsS https://ifconfig.me 2>/dev/null && echo) and repo-qualified the cross-repo source paths in the header so they don't read as broken local links.",
+            "doc-consistency subagent — aligned its system description with the canonical nine-repo, three-layer (Core → OS-native → Role) wording.",
+            "audit-core.sh — clarified the META-allowlist comments: those files are \"not shipped Core\" (absent from core.manifest), not \"never vendored\" (the subtree copy carries them physically).",
+            "Doc drift caught by /doc-audit — corrected \"vendored into/fans out to nine OS repos\" → eight (Windows vendors no core/) in CHANGELOG.md + CONTRIBUTING.md; added the manifest-listed zsh/loader.zsh and lazygit/config.yml to the README Layout tree; completed the README tmux-scripts list (added tmux-battery/tmux-cheat); and attributed the cheat alias to functions.zsh (not aliases.zsh) in aliases.md."
+          ]
+        }
+      ]
+    },
+    {
       "repo": "dotfiles-Windows",
       "version": "Unreleased",
       "summary": "DX/UX overhaul — A structural + terminal-UX pass focused on a world-class bootstrap and shell experience, grouped by theme.",
@@ -43,6 +68,8 @@
         {
           "category": "CI / structure (backend)",
           "items": [
+            "nvim-sync bot (.github/workflows/nvim-sync.yml) — runs nvim-sync.ps1 weekly (and on demand) and opens a PR when Core's nvim/ tree has actually moved ahead, so the host editor config can't silently fall behind. Judges drift on the Lua tree only (ignores .core-ref's per-run timestamp). First-party (GITHUB_TOKEN + gh), no third-party action.",
+            "package-freshness bot (.github/workflows/package-freshness.yml + packages/Check-PackageFreshness.ps1) — weekly on windows-latest, resolves the live scoop/winget version of each managed app and files a deduplicated findings issue when any is ahead of packages.lock.json. Findings only: re-pinning still runs locally via Update-PackageLock.ps1 (it needs the apps installed).",
             "Hermetic, incremental CI — GitHub Actions pinned to commit SHAs; Pester and PSScriptAnalyzer pinned to exact versions; PSGallery modules cached; a detect-changes gate skips the Windows jobs for docs-only changes.",
             "Coverage gate — Pester enforces ≥85% coverage on the pure-helper library.",
             "uninstall.ps1 — reverse the bootstrap; removes only symlinks that point back into the repo, with -DryRun / -RestoreBackups.",
@@ -70,7 +97,17 @@
             "Zero-config onboarding — prompt for git name/email at install time.",
             "dotfiles-doctor -Fix opt-in remediation for the common issues.",
             "dothelp -i fuzzy command picker (fzf) that copies the pick.",
-            "serve -Local — opt-in localhost-only bind (127.0.0.1) for the quick CWD HTTP server; LAN exposure stays the default. Per-finding backlog IDs and their status live in docs/ARCHITECTURE-AUDIT.md — the single ID registry, so this log stays prose with no competing B#/U# scheme."
+            "serve -Local — opt-in localhost-only bind (127.0.0.1) for the quick CWD HTTP server; LAN exposure stays the default."
+          ]
+        },
+        {
+          "category": "Fixes",
+          "items": [
+            "md no longer shadows mkdir — the glow markdown-render alias was bound to md, clobbering PowerShell's built-in md (mkdir). It's now gmd; md is mkdir again. README, docs/TOOLS.md, and the dothelp catalog updated.",
+            "tools command implemented — the cheatsheet advertised tools (\"open the host tool docs\") but nothing defined it. It now renders docs/TOOLS.md (glow → bat → nvim → plain), and is listed in dothelp.",
+            "Dead-shim guards for fif / fbr — a tool that *resolves* on PATH but won't *launch* (a stale Chocolatey shim, or a scoop shim whose app was removed, shadowing the real binary) produced raw Program rg.exe failed to run / cannot find file ...fzf.exe errors. A new Test-CmdRuns helper probes executability so fif/fbr (and the same class of Ctrl+t/Ctrl+r breakage) fail with an actionable fix hint instead.",
+            "dotfiles-doctor now checks executability — a new *Core toolchain runs* probe flags tools that resolve but won't launch, which the resolve-only check could not see.",
+            "tools / gmd no longer abort when less is absent — glow (and bat) page through $PAGER, defaulting to less, which isn't on a stock Windows box, so glow --pager died with exec: \"less\" not found. Both now pass paging flags only when a pager actually exists and render inline otherwise. Per-finding backlog IDs and their status live in docs/ARCHITECTURE-AUDIT.md — the single ID registry, so this log stays prose with no competing B#/U# scheme."
           ]
         }
       ]
