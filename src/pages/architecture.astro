@@ -32,6 +32,29 @@ const comparisons = [
   },
 ];
 
+// The macOS desktop layer — committed GUI tooling the OS-native layer owns, themed to match
+// Core. Lives in dotfiles-MacBook (aerospace/, sketchybar/, karabiner/).
+const macDesktop = [
+  {
+    icon: '◳',
+    name: 'AeroSpace',
+    tone: 'blue',
+    body: 'i3-style tiling window manager — pure TOML, no SIP disable required, no daemon. alt drives focus/move/resize and workspaces, apps auto-place on a home workspace, and JankyBorders rings the focused tile.',
+  },
+  {
+    icon: '▭',
+    name: 'SketchyBar',
+    tone: 'purple',
+    body: 'A programmable menu bar themed to tokyonight-storm, matching starship + tmux. Live AeroSpace workspaces on the left; CPU, memory, disk, network, and a click-to-toggle keep-awake on the right — every glyph from the one Nerd Font, no extra deps.',
+  },
+  {
+    icon: '⌨',
+    name: 'Karabiner',
+    tone: 'cyan',
+    body: 'Caps→Ctrl/Esc, and a Tab-hyper layer that mirrors the WM verbs — hyper+hjkl to focus, hyper+1–5 for workspaces — so the whole tiling workflow stays on the home row.',
+  },
+];
+
 // Deep-dive docs that live in the repos but were previously unlinked from the site.
 const blob = (repo: string, path: string) => `https://github.com/Gerrrt/${repo}/blob/main/${path}`;
 const deepDives = [
@@ -188,6 +211,27 @@ git subtree pull --prefix=core https://github.com/Gerrrt/dotfiles-core main --sq
           <code>~/engagements</code>, and every tool is for authorized engagements with
           written rules of engagement only.
         </p>
+      </div>
+
+      <!-- macOS desktop layer -->
+      <h2 class="mt">The macOS desktop layer</h2>
+      <p>
+        OS-native layers own more than packages and paths. On macOS,
+        <code>dotfiles-MacBook</code> commits a full tiling-desktop setup — window manager,
+        menu bar, and keyboard — themed to Core’s tokyonight palette so the GUI reads as an
+        extension of the terminal, not a separate world.
+      </p>
+      <div class="grid grid-3">
+        {
+          macDesktop.map((d) => (
+            <article class="card">
+              <h3 class:list={[`tone-${d.tone}`]}>
+                <span class="text-mono">{d.icon}</span> {d.name}
+              </h3>
+              <p style="margin:0;">{d.body}</p>
+            </article>
+          ))
+        }
       </div>
 
       <!-- deep dives -->
