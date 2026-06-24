@@ -67,8 +67,8 @@ export const repos: Repo[] = [
     status: 'stable',
     icon: '⌘',
     blurb:
-      'macOS (Apple Silicon / Intel) terminal environment. Homebrew + brew bundle, Ghostty, 1Password agent, native pbcopy clipboard.',
-    highlights: ['Homebrew + Brewfile', 'Ghostty config', 'osxkeychain git', 'macOS defaults'],
+      'macOS (Apple Silicon / Intel) terminal environment. Homebrew + brew bundle, Ghostty, 1Password agent, native pbcopy clipboard — plus a committed tiling-desktop layer: AeroSpace, SketchyBar, and Karabiner.',
+    highlights: ['Homebrew + Brewfile', 'Ghostty + 1Password', 'AeroSpace · SketchyBar · Karabiner', 'macOS defaults'],
   },
   {
     name: 'dotfiles-Windows',
