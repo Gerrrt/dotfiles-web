@@ -30,8 +30,11 @@ const W = 980;
 const H = 470;
 const padX = 28;
 const N = consumers.length;
-const slot = (W - 2 * padX) / N;
-const nodeW = Math.min(112, slot - 14);
+// Defensive (component is data-driven from repos.ts): never divide by zero — a
+// core-only list renders just the hub — and never emit a negative/oversized node
+// width as the fleet grows. Below ~56px nodes start to crowd but the SVG stays valid.
+const slot = (W - 2 * padX) / Math.max(N, 1);
+const nodeW = Math.max(56, Math.min(112, slot - 14));
 const nodeH = 58;
 const rowY = 320; // top edge of the consumer-node row
 const coreW = 250;
