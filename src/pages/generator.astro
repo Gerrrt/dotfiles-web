@@ -49,14 +49,13 @@ const payload = { targets, channels, current: release.current };
 
       <div class="gen card" id="generator" data-gen={JSON.stringify(payload)}>
         <!-- platform picker -->
-        <div class="gen__platforms" role="tablist" aria-label="Platform">
+        <div class="gen__platforms" role="group" aria-label="Platform">
           {
             targets.map((t, i) => (
               <button
                 type="button"
-                role="tab"
                 class:list={['gen__plat', { active: i === 0 }]}
-                aria-selected={i === 0 ? 'true' : 'false'}
+                aria-pressed={i === 0 ? 'true' : 'false'}
                 data-plat={t.id}
               >
                 {t.label}
@@ -344,7 +343,7 @@ const payload = { targets, channels, current: release.current };
     }
 
     function renderOptions() {
-      optionsEl!.innerHTML = '';
+      optionsEl!.replaceChildren();
       const kinds: Array<[Flag['kind'], string]> = [
         ['provision', 'Provisioning'],
         ['safety', 'Safety'],
@@ -384,7 +383,7 @@ const payload = { targets, channels, current: release.current };
 
     function renderNotes() {
       if (!notesEl) return;
-      notesEl.innerHTML = '';
+      notesEl.replaceChildren();
       const ns = active.notes || [];
       if (!ns.length) {
         notesEl.hidden = true;
@@ -414,12 +413,12 @@ const payload = { targets, channels, current: release.current };
       root!.querySelectorAll<HTMLButtonElement>('[data-plat]').forEach((b) => {
         const on = b.dataset.plat === id;
         b.classList.toggle('active', on);
-        b.setAttribute('aria-selected', String(on));
+        b.setAttribute('aria-pressed', String(on));
       });
       if (blurbEl) blurbEl.textContent = active.blurb;
       if (repoEl) {
         repoEl.textContent = `${active.repo} ↗`;
-        repoEl.href = `${GH.replace('/Gerrrt', '')}/Gerrrt/${active.repo}`;
+        repoEl.href = `${GH}/${active.repo}`;
       }
       renderOptions();
       renderNotes();
