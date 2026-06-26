@@ -41,9 +41,21 @@ export interface FeedItem {
   core: boolean;
 }
 
-// Backward-compat: tolerate an older generated.json whose items are bare strings.
+// Every known kind — used to validate untrusted/older JSON before indexing kindMeta.
+const ALL_KINDS: ChangeKind[] = ['perf', 'feature', 'fix', 'config', 'security', 'other'];
+const isKind = (k: unknown): k is ChangeKind =>
+  typeof k === 'string' && (ALL_KINDS as string[]).includes(k);
+
+// Backward-compat: tolerate an older generated.json whose items are bare strings,
+// and defensively coerce malformed objects (missing text / unknown kind) so the
+// page can never throw indexing kindMeta[item.kind].
 function normItem(it: unknown): ChangeItem {
-  return typeof it === 'string' ? { text: it, kind: 'other' } : (it as ChangeItem);
+  if (typeof it === 'string') return { text: it, kind: 'other' };
+  const o = (it ?? {}) as Record<string, unknown>;
+  return {
+    text: typeof o.text === 'string' ? o.text : '',
+    kind: isKind(o.kind) ? o.kind : 'other',
+  };
 }
 
 const rawChangelog = (generated as { changelog?: ChangelogEntry[] }).changelog ?? [];
@@ -52,23 +64,35 @@ export const changelog: ChangelogEntry[] = rawChangelog.map((e) => ({
   groups: e.groups.map((g) => ({ ...g, items: g.items.map(normItem) })),
 }));
 
-// Prefer the precomputed feed; if an older JSON lacks it, derive it from changelog.
+// Newest-first; undated (Unreleased) blocks float to the top. Mirrors the sort in
+// collect-metrics.mjs so a derived fallback matches the precomputed feed's order.
+const byDateDesc = (a: FeedItem, b: FeedItem) => {
+  if (!a.date && !b.date) return 0;
+  if (!a.date) return -1;
+  if (!b.date) return 1;
+  return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
+};
+
+// Prefer the precomputed feed; if an older JSON lacks it, derive it from changelog
+// AND apply the same sort so the reverse-chronological page renders correctly.
 const rawFeed = (generated as { feed?: FeedItem[] }).feed;
 export const feed: FeedItem[] =
   rawFeed ??
-  changelog.flatMap((e) =>
-    e.groups.flatMap((g) =>
-      g.items.map((it) => ({
-        repo: e.repo,
-        version: e.version,
-        date: e.date,
-        category: g.category,
-        kind: it.kind,
-        text: it.text,
-        core: e.repo === 'dotfiles-core',
-      }))
+  changelog
+    .flatMap((e) =>
+      e.groups.flatMap((g) =>
+        g.items.map((it) => ({
+          repo: e.repo,
+          version: e.version,
+          date: e.date,
+          category: g.category,
+          kind: it.kind,
+          text: it.text,
+          core: e.repo === 'dotfiles-core',
+        }))
+      )
     )
-  );
+    .sort(byDateDesc);
 
 // Display metadata for each kind: chip/badge label + the tone token (maps to the
 // global .tone-* colour classes). Centralised so the page and chips stay in step.
