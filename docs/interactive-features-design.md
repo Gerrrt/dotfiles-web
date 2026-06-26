@@ -35,9 +35,9 @@ Before designing anything, the rules this repo already lives by:
 | Constraint | Consequence for these features |
 | --- | --- |
 | Static output, no request-time server | "Generator backend" = a typed data model compiled into the page + pure client-side string synthesis. No API. |
-| Docs must not drift from the source repos (`CLAUDE.md`) | The generator's flag/module data and the feed's content must be **derived** from the repos (manifest, `bootstrap.sh`, `CHANGELOG.md`), not hand-retyped. |
+| Docs must not drift from the source repos (`CLAUDE.md`) | Two tiers, both anti-drift: **machine-derived** facts (counts, changelog content) are *generated* from the repos via `collect-metrics.mjs`; **hand-authored** config (the generator's `bootstrap.ts`, exactly like today's `src/data/install.ts`) is allowed but must be **verified against source** by a CI guard — see §1.4. Neither tier is silently hand-retyped. |
 | Build must never fail on GitHub flakiness (`src/lib/github.ts`) | Any new network use stays best-effort, time-boxed, null-fallback. Prefer build-time + committed JSON. |
-| Tokyo Night theme, existing CSS tokens (`global.css`) | Reuse `--tn-*` tokens, `.badge`, `.card`, `.tone-*`, `CommandBlock`. No new design system. |
+| Tokyo Night theme, existing CSS tokens (`src/styles/global.css`) | Reuse `--tn-*` tokens, `.badge`, `.card`, `.tone-*`, `CommandBlock`. No new design system. |
 | Strict ref validation already exists (`REF_PATTERN`, `isValidRef`) | The generator reuses it verbatim for any user-influenced ref. Never interpolate an unvalidated token into a command. |
 
 **Reuse, don't reinvent:**
@@ -183,6 +183,17 @@ shows `--macos-defaults`; selecting Kali shows `--no-offensive`. No flag can be
 emitted for a platform that would reject it (recall macOS's `KNOWN_FLAGS` rejects
 unknowns with exit 1 — the generator must never produce that).
 
+**Drift guard (this is the §0 verification tier).** Because `bootstrap.ts` is
+hand-authored, a CI check (`scripts/verify-bootstrap-flags.mjs`, runnable in
+`/doc-audit`) parses each repo's actual flag surface — the `case` arms in
+`bootstrap.sh`, the macOS `KNOWN_FLAGS` array, the `param()` block in
+`install.ps1` — and fails the build if `bootstrap.ts` lists a flag the repo
+doesn't accept (or omits one it does). So the data is hand-authored for clarity
+but cannot silently drift from source. (Track B's `module`-kind entries are
+likewise checked against `core.manifest`.) An alternative is to *generate*
+`bootstrap.ts` outright; the verify-don't-generate approach is recommended
+because the human labels/help text have no machine source.
+
 ### 1.5 Frontend — component + client logic
 
 A new page `src/pages/generator.astro` (or a section embedded in Get Started),
@@ -200,12 +211,19 @@ site). Structure:
 **State → command synthesis** (pure function, the testable core):
 
 ```ts
+import { cloneRef, isValidRef } from '../data/site'; // reuse the canonical helpers
+
 function synthesize(t: BootstrapTarget, selected: Set<string>, ref: string): string {
-  const cloneRef = ref === 'main' ? '' : `--branch ${ref} `; // reuse site.ts logic
+  // Validate FIRST — never interpolate an unvalidated ref into a command. cloneRef()
+  // already throws on a bad ref; this explicit guard documents the invariant and
+  // covers any direct caller. The UI only ever passes a pre-validated channel.
+  if (ref !== 'main' && !isValidRef(ref)) throw new Error(`invalid ref: ${ref}`);
+  const refFlag = cloneRef(ref);             // '' for main, '--branch <tag> ' otherwise
   const url = `https://github.com/Gerrrt/${t.repo}`;
+  const dir = t.cloneDir ?? `~/${t.repo}`;   // default so we never emit `undefined`
   const clone = t.dialect === 'sh'
-    ? `git clone ${cloneRef}${url} ${t.cloneDir}\ncd ${t.cloneDir}`
-    : `git clone ${cloneRef}${url}\ncd ${t.repo}`;
+    ? `git clone ${refFlag}${url} ${dir}\ncd ${dir}`
+    : `git clone ${refFlag}${url}\ncd ${t.repo}`;
   const flags = t.flags
     .filter(f => selected.has(f.key))
     .map(f => f.flag)            // already a literal from the typed data — never user text
@@ -454,7 +472,7 @@ Two viable homes, both compatible with "per-repo bootstrap" (the dispatcher only
 3. **Phase 3 (optional):** the universal dispatcher in `dotfiles-core` (or Pages
    `public/`), surfaced as the generator's advanced one-liner.
 
-Each phase is independently shippable and independently revertable; nothing in
+Each phase is independently shippable and independently revertible; nothing in
 Phase 1 depends on Phases 2-3.
 
 ---
