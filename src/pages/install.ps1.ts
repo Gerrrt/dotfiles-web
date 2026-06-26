@@ -19,7 +19,10 @@ Write-Host "🚀 Initializing Windows Terminal Environment..." -ForegroundColor 
 Write-Host "Selected Modules: \$Modules"
 
 # --- PowerShell Dependency Checker Engine ---
-\$RequiredTools = @("git", "nvim", "fzf", "powershell")
+# Probe only tools we can actually auto-install via WinGet below. PowerShell
+# itself is omitted: this script is *running* in it, and there is no meaningful
+# WinGet id to fall back to.
+\$RequiredTools = @("git", "nvim", "fzf")
 \$MissingTools = @()
 
 Write-Host "🔍 Auditing Windows system environment..." -ForegroundColor Cyan
@@ -43,11 +46,13 @@ if (\$MissingTools.Count -gt 0) {
 
         foreach (\$missing in \$MissingTools) {
             Write-Host "📦 Installing \$missing via WinGet..." -ForegroundColor Green
-            # Maps generic tool names to official WinGet app IDs
+            # Maps generic tool names to official WinGet app IDs. Pin with --id -e
+            # and pre-accept agreements so the install never blocks on a prompt in
+            # a non-interactive irm-piped-to-iex run.
             switch (\$missing) {
-                "nvim" { winget install Neovim.Neovim --silent }
-                "git"  { winget install Git.Git --silent }
-                "fzf"  { winget install junegunn.fzf --silent }
+                "nvim" { winget install --id Neovim.Neovim -e --accept-package-agreements --accept-source-agreements --silent }
+                "git"  { winget install --id Git.Git -e --accept-package-agreements --accept-source-agreements --silent }
+                "fzf"  { winget install --id junegunn.fzf -e --accept-package-agreements --accept-source-agreements --silent }
             }
         }
     } else {
@@ -67,6 +72,10 @@ if (\$Modules -like "*nvim*") {
     \$NvimPath = "\$HOME\\AppData\\Local\\nvim"
     if (-not (Test-Path \$NvimPath)) {
         git clone --depth 1 https://github.com/Gerrrt/dotfiles-Windows \$NvimPath
+        if (\$LASTEXITCODE -ne 0) {
+            Write-Error "git clone failed (exit \$LASTEXITCODE). Aborting before declaring success."
+            exit 1
+        }
     }
 }
 

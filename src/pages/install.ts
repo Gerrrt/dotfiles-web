@@ -21,20 +21,25 @@ echo "🚀 Initializing Terminal Environment..."
 echo "Selected Modules: \$MODULES"
 
 # --- Dependency Checker Engine ---
-declare -a DEPS=("zsh" "nvim" "tmux" "fzf" "git" "ripgrep" "bat")
-MISSING_DEPS=()
+# "binary:package" pairs — the command we probe for and the package that
+# provides it diverge (rg↔ripgrep, nvim↔neovim), so track both explicitly.
+# Indexed arrays + parameter expansion keep this portable to macOS bash 3.2
+# (no associative arrays, which need bash 4+).
+DEPS=("zsh:zsh" "nvim:neovim" "tmux:tmux" "fzf:fzf" "git:git" "rg:ripgrep" "bat:bat")
+MISSING_PKGS=()
 
 echo "🔍 Auditing target system dependencies..."
 
-for cmd in "\${DEPS[@]}"; do
+for entry in "\${DEPS[@]}"; do
+    cmd="\${entry%%:*}"
+    pkg="\${entry#*:}"
     if ! command -v "\$cmd" &> /dev/null; then
-        # Map raw binary names to friendly installation alerts if needed
-        MISSING_DEPS+=("\$cmd")
+        MISSING_PKGS+=("\$pkg")
     fi
 done
 
-if [ \${#MISSING_DEPS[@]} -ne 0 ]; then
-    echo "⚠️  Missing Core Binaries Detected: [ \${MISSING_DEPS[*]} ]"
+if [ \${#MISSING_PKGS[@]} -ne 0 ]; then
+    echo "⚠️  Missing dependencies detected: [ \${MISSING_PKGS[*]} ]"
     echo "--------------------------------------------------------"
     echo "Would you like this installer to attempt automated package setup?"
     echo "Choose: [Y]es (via Homebrew/APT/Pacman) or [N]on-destructive skip"
@@ -44,13 +49,13 @@ if [ \${#MISSING_DEPS[@]} -ne 0 ]; then
         # Detect package manager and install dependencies
         if command -v brew &> /dev/null; then
             echo "🍺 Homebrew detected. Installing missing tools..."
-            brew install "\${MISSING_DEPS[@]}"
+            brew install "\${MISSING_PKGS[@]}"
         elif command -v apt-get &> /dev/null; then
             echo "📦 APT detected. Updating and installing missing tools..."
-            sudo apt-get update && sudo apt-get install -y "\${MISSING_DEPS[@]}"
+            sudo apt-get update && sudo apt-get install -y "\${MISSING_PKGS[@]}"
         elif command -v pacman &> /dev/null; then
             echo "🏹 Pacman detected. Installing missing tools..."
-            sudo pacman -S --noconfirm "\${MISSING_DEPS[@]}"
+            sudo pacman -S --noconfirm "\${MISSING_PKGS[@]}"
         else
             echo "❌ No supported package manager found. Please install manually."
             exit 1
