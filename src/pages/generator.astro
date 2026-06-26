@@ -1,0 +1,437 @@
+---
+import Base from '../layouts/Base.astro';
+import { targets } from '../data/bootstrap';
+import { release, isValidRef, cloneRef } from '../data/site';
+import { site } from '../data/site';
+
+// Channels for the optional version pin, same logic as getting-started.astro:
+// always include `current` so a pinned-but-unlisted release still surfaces.
+const channels = release.channels.includes(release.current)
+  ? [...release.channels]
+  : [release.current, ...release.channels];
+const showVersion = channels.length > 1 || release.current !== 'main';
+
+// Server-rendered DEFAULT (no-JS fallback): the first target, full install, at the
+// current ref. The client island takes over on load and rebuilds on every toggle.
+const def = targets[0];
+const defRef = release.current;
+const defRefFlag = isValidRef(defRef) ? cloneRef(defRef) : '';
+const defUrl = `https://github.com/${site.githubUser}/${def.repo}`;
+const defDir = def.cloneDir ?? `~/${def.repo}`;
+const defLines = [
+  `git clone ${defRefFlag}${defUrl} ${defDir}`,
+  `cd ${defDir}`,
+  def.entry,
+];
+const defCode = defLines.join('\n');
+
+// Serialised to the client island (typed data drives everything; no user free-text
+// ever reaches a command).
+const payload = { targets, channels, current: release.current };
+---
+
+<Base
+  title="Command Generator"
+  description="Build a custom one-line install command for any platform in the dotfiles ecosystem — pick your repo, toggle the real bootstrap flags, copy, run."
+>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Command generator</span>
+        <h1>Build your install command</h1>
+        <p class="lead">
+          Pick a platform, toggle the options you want, and copy a command that runs against
+          the repo <strong>as it is today</strong> — a real <code>clone</code> +
+          <code>bootstrap</code>, no magic <code>curl | bash</code>. Every toggle maps to a
+          flag the bootstrap actually accepts.
+        </p>
+      </div>
+
+      <div class="gen card" id="generator" data-gen={JSON.stringify(payload)}>
+        <!-- platform picker -->
+        <div class="gen__platforms" role="tablist" aria-label="Platform">
+          {
+            targets.map((t, i) => (
+              <button
+                type="button"
+                role="tab"
+                class:list={['gen__plat', { active: i === 0 }]}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                data-plat={t.id}
+              >
+                {t.label}
+              </button>
+            ))
+          }
+        </div>
+
+        <p class="gen__blurb" id="gen-blurb">{def.blurb}</p>
+
+        <div class="gen__body">
+          <!-- options (populated by the island; falls back to a hint with JS off) -->
+          <div class="gen__options" id="gen-options" aria-live="polite">
+            <p class="muted gen__nojs">Enable JavaScript to toggle options — the default full-install command is ready below.</p>
+          </div>
+
+          <!-- version pin -->
+          {
+            showVersion && (
+              <label class="gen__version">
+                <span class="gen__opt-label">Release</span>
+                <select id="gen-version" aria-label="Release version">
+                  {channels.map((c) => (
+                    <option value={c} selected={c === release.current}>
+                      {c === 'main' ? 'main · rolling (latest commit)' : c}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )
+          }
+        </div>
+
+        <!-- live output -->
+        <div class="gen__out">
+          <div class="gen__out-head">
+            <span class="gen__out-label">Your command</span>
+            <a class="gen__repo text-mono" id="gen-repo" href={`${site.githubBase}/${def.repo}`} target="_blank" rel="noopener">{def.repo} ↗</a>
+          </div>
+          <div class="codeblock">
+            <button class="copy" type="button" data-copy data-code={defCode} aria-label="Copy command">copy</button>
+            <pre><code id="gen-code">{defLines.map((line, i) => (
+              <span class="cb-line"><span class="cb-prompt">$ </span><span class="cb-text">{line}</span>{i < defLines.length - 1 ? '\n' : ''}</span>
+            ))}</code></pre>
+          </div>
+          <ul class="gen__notes" id="gen-notes" hidden></ul>
+        </div>
+      </div>
+
+      <p class="muted center" style="margin-top:2rem;">
+        Want the full step-by-step with prerequisites and a dry-run preview? See
+        <a href="/getting-started">Get Started</a>. Generated commands only ever use flags
+        verified against each repo’s bootstrap.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .gen {
+    padding: 1.5rem;
+  }
+  .gen__platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.4rem;
+    background: var(--tn-bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .gen__plat {
+    flex: 1 1 auto;
+    min-width: max-content;
+    padding: 0.55rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .gen__plat:hover {
+    color: #fff;
+  }
+  .gen__plat.active {
+    color: #10131f;
+    background: linear-gradient(135deg, var(--tn-blue), var(--tn-purple));
+  }
+  .gen__blurb {
+    margin: 1.1rem 0 0;
+    font-size: 0.92rem;
+    color: var(--text-dim);
+  }
+  .gen__body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .gen__options {
+    flex: 1 1 22rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+  .gen__group-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--tn-purple);
+    margin: 0 0 0.6rem;
+  }
+  .gen__opt {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4rem 0.6rem;
+    align-items: start;
+    padding: 0.55rem 0;
+    cursor: pointer;
+  }
+  .gen__opt input {
+    margin-top: 0.15rem;
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--tn-blue);
+    cursor: pointer;
+  }
+  .gen__opt-name {
+    font-size: 0.9rem;
+    color: var(--tn-fg);
+    font-weight: 600;
+  }
+  .gen__opt-flag {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--tn-cyan);
+    margin-left: 0.4rem;
+  }
+  .gen__opt-help {
+    grid-column: 2;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .gen__version {
+    flex: 0 1 16rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .gen__opt-label,
+  .gen__out-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--tn-purple);
+  }
+  .gen__version select {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    color: var(--tn-fg);
+    background: var(--tn-bg-dark);
+    border: 1px solid var(--tn-border-bright);
+    border-radius: 8px;
+    padding: 0.55rem 0.8rem;
+    cursor: pointer;
+  }
+  .gen__out-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .gen__repo {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--tn-cyan);
+  }
+  .gen__repo:hover {
+    color: var(--tn-blue);
+  }
+  .gen__notes {
+    margin: 1rem 0 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .gen__notes li {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .gen__notes li::marker {
+    color: var(--tn-comment);
+  }
+  .gen__notes code {
+    font-size: 0.8rem;
+  }
+  /* code-block text colours (these are component-scoped in CommandBlock; the island
+     renders its own block, so re-declare them here). */
+  .cb-prompt {
+    color: var(--tn-green);
+    user-select: none;
+  }
+  .cb-text {
+    color: var(--tn-fg);
+  }
+</style>
+
+<script>
+  // Bootstrap Command Generator island. Pure client-side string synthesis from the
+  // typed data model — the only user-influenced token is the release ref, which is
+  // validated with the SAME pattern as src/data/site.ts before it can appear in a
+  // command (mirrored here because the build-time module isn't shipped to the client).
+  interface Flag { key: string; label: string; flag: string; help: string; kind: 'provision' | 'safety'; default?: boolean }
+  interface Target { id: string; label: string; repo: string; dialect: 'sh' | 'ps'; entry: string; cloneDir?: string; blurb: string; flags: Flag[]; notes?: string[] }
+
+  const root = document.getElementById('generator');
+  const codeEl = document.getElementById('gen-code');
+  const optionsEl = document.getElementById('gen-options');
+  const blurbEl = document.getElementById('gen-blurb');
+  const notesEl = document.getElementById('gen-notes');
+  const repoEl = document.getElementById('gen-repo') as HTMLAnchorElement | null;
+  const versionEl = document.getElementById('gen-version') as HTMLSelectElement | null;
+  const copyBtn = root?.querySelector<HTMLButtonElement>('[data-copy]');
+
+  const REF_OK = /^[A-Za-z0-9._/-]+$/; // identical to site.ts REF_PATTERN
+  const GH = 'https://github.com/Gerrrt';
+
+  if (root && codeEl && optionsEl) {
+    const data = JSON.parse(root.dataset.gen || '{}') as { targets: Target[]; current: string };
+    const targets = data.targets || [];
+    let active: Target = targets[0];
+
+    // Build the command lines for the current selection. Validate the ref FIRST —
+    // never interpolate an unvalidated ref. Default the clone dir so we never emit
+    // `undefined`.
+    function lines(t: Target, selected: Set<string>, ref: string): string[] {
+      const safeRef = ref === 'main' || REF_OK.test(ref) ? ref : 'main';
+      const refFlag = safeRef === 'main' ? '' : `--branch ${safeRef} `;
+      const url = `${GH}/${t.repo}`;
+      const flagStr = t.flags.filter((f) => selected.has(f.key)).map((f) => f.flag).join(' ');
+      const run = t.entry + (flagStr ? ' ' + flagStr : '');
+      if (t.dialect === 'ps') return [`git clone ${refFlag}${url}`, `cd ${t.repo}`, run];
+      const dir = t.cloneDir || `~/${t.repo}`;
+      return [`git clone ${refFlag}${url} ${dir}`, `cd ${dir}`, run];
+    }
+
+    function selectedKeys(): Set<string> {
+      const set = new Set<string>();
+      optionsEl!.querySelectorAll<HTMLInputElement>('input:checked').forEach((i) => set.add(i.value));
+      return set;
+    }
+
+    // Render the command into the codeblock and keep the copy button's data-code in
+    // sync (Base.astro's global handler reads that attribute). All text via
+    // textContent — no innerHTML with dynamic data.
+    function renderOutput() {
+      const ref = versionEl?.value || data.current || 'main';
+      const ls = lines(active, selectedKeys(), ref);
+      const prompt = active.dialect === 'ps' ? 'PS> ' : '$ ';
+      codeEl!.textContent = '';
+      ls.forEach((text, i) => {
+        const line = document.createElement('span');
+        line.className = 'cb-line';
+        const p = document.createElement('span');
+        p.className = 'cb-prompt';
+        p.textContent = prompt;
+        const t = document.createElement('span');
+        t.className = 'cb-text';
+        t.textContent = text;
+        line.append(p, t);
+        codeEl!.appendChild(line);
+        codeEl!.appendChild(document.createTextNode(i < ls.length - 1 ? '\n' : ''));
+      });
+      copyBtn?.setAttribute('data-code', ls.join('\n'));
+    }
+
+    function renderOptions() {
+      optionsEl!.innerHTML = '';
+      const kinds: Array<[Flag['kind'], string]> = [
+        ['provision', 'Provisioning'],
+        ['safety', 'Safety'],
+      ];
+      for (const [kind, title] of kinds) {
+        const group = active.flags.filter((f) => f.kind === kind);
+        if (!group.length) continue;
+        const wrap = document.createElement('div');
+        const h = document.createElement('p');
+        h.className = 'gen__group-title';
+        h.textContent = title;
+        wrap.appendChild(h);
+        for (const f of group) {
+          const label = document.createElement('label');
+          label.className = 'gen__opt';
+          const input = document.createElement('input');
+          input.type = 'checkbox';
+          input.value = f.key;
+          input.checked = !!f.default;
+          input.addEventListener('change', renderOutput);
+          const name = document.createElement('span');
+          name.className = 'gen__opt-name';
+          name.textContent = f.label;
+          const flag = document.createElement('span');
+          flag.className = 'gen__opt-flag';
+          flag.textContent = f.flag;
+          name.appendChild(flag);
+          const help = document.createElement('span');
+          help.className = 'gen__opt-help';
+          help.textContent = f.help;
+          label.append(input, name, help);
+          wrap.appendChild(label);
+        }
+        optionsEl!.appendChild(wrap);
+      }
+    }
+
+    function renderNotes() {
+      if (!notesEl) return;
+      notesEl.innerHTML = '';
+      const ns = active.notes || [];
+      if (!ns.length) {
+        notesEl.hidden = true;
+        return;
+      }
+      notesEl.hidden = false;
+      for (const n of ns) {
+        const li = document.createElement('li');
+        // render `inline code` spans; everything else is plain text
+        n.split(/(`[^`]+`)/).forEach((part) => {
+          if (part.startsWith('`') && part.endsWith('`')) {
+            const c = document.createElement('code');
+            c.textContent = part.slice(1, -1);
+            li.appendChild(c);
+          } else if (part) {
+            li.appendChild(document.createTextNode(part));
+          }
+        });
+        notesEl.appendChild(li);
+      }
+    }
+
+    function selectPlatform(id: string) {
+      const next = targets.find((t) => t.id === id);
+      if (!next) return;
+      active = next;
+      root!.querySelectorAll<HTMLButtonElement>('[data-plat]').forEach((b) => {
+        const on = b.dataset.plat === id;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', String(on));
+      });
+      if (blurbEl) blurbEl.textContent = active.blurb;
+      if (repoEl) {
+        repoEl.textContent = `${active.repo} ↗`;
+        repoEl.href = `${GH.replace('/Gerrrt', '')}/Gerrrt/${active.repo}`;
+      }
+      renderOptions();
+      renderNotes();
+      renderOutput();
+    }
+
+    root.querySelectorAll<HTMLButtonElement>('[data-plat]').forEach((b) => {
+      b.addEventListener('click', () => selectPlatform(b.dataset.plat || ''));
+    });
+    versionEl?.addEventListener('change', renderOutput);
+
+    // initial paint for the active (first) platform
+    selectPlatform(active.id);
+  }
+</script>
