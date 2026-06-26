@@ -17,6 +17,28 @@
 #   curl -fsSL https://gerrrt.github.io/dotfiles-web/install | less
 set -euo pipefail
 
+# Static usage block. Printed for -h/--help. Deliberately NOT read from "$0": under
+# the primary `curl … | bash -s -- …` usage the script has no on-disk path, so a
+# "$0"-based reader would print nothing.
+usage() {
+  cat <<'EOF'
+dotfiles installer — universal bootstrap launcher
+
+USAGE
+  curl -fsSL https://gerrrt.github.io/dotfiles-web/install | bash -s -- [flags]
+  curl -fsSL https://gerrrt.github.io/dotfiles-web/install | MODULES=core bash
+
+FLAGS
+  --modules a,b   comma-separated component set (default: core; e.g. core,offensive)
+  --dry-run       preview the symlink plan, change nothing (--links-only --dry-run)
+  --dest DIR      where to clone the repo (default: $HOME)
+  -h, --help      show this help and exit
+
+The launcher auto-detects your OS, clones the matching repo from the fleet, and
+runs its bootstrap. Selecting 'offensive' targets the Kali offensive role layer.
+EOF
+}
+
 OWNER="Gerrrt"
 MODULES="${MODULES:-core}"
 DEST="${DEST:-$HOME}"
@@ -29,7 +51,7 @@ while [ "$#" -gt 0 ]; do
     --dest)      DEST="${2:-}"; shift 2 ;;
     --dest=*)    DEST="${1#*=}"; shift ;;
     --dry-run)   DRY_RUN=1; shift ;;
-    -h|--help)   sed -n '2,18p' "$0" 2>/dev/null | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help)   usage; exit 0 ;;
     *)           printf 'install: ignoring unknown argument: %s\n' "$1" >&2; shift ;;
   esac
 done

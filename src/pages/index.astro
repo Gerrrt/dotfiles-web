@@ -436,7 +436,9 @@ cd ~/dotfiles-MacBook
     const textSpan = block?.querySelector<HTMLElement>('.cb-text') ?? null;
     const copyBtn = block?.querySelector<HTMLButtonElement>('[data-copy]') ?? null;
 
-    // Same strictness as src/data/site.ts — only simple tokens ever reach the
+    // Defense-in-depth, in the same spirit as src/data/site.ts's REF_PATTERN but
+    // deliberately STRICTER: module ids are simple tokens, so this set omits the
+    // slash that REF_PATTERN allows for git refs. Only validated tokens reach the
     // generated command line, so a future option id can't smuggle in metacharacters.
     const TOKEN_OK = /^[A-Za-z0-9._-]+$/;
 

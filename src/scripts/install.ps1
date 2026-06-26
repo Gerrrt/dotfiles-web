@@ -6,23 +6,28 @@
   dotfiles-Windows (PowerShell, Windows Terminal, scoop/winget, psmux); WSL distros
   configure themselves from their own repos and are intentionally not touched here.
 
-  Quick start (Core defaults):
+  The Windows host install is a single unit — there is no per-module selection like
+  the Linux/macOS side — so this launcher exposes the switches dotfiles-Windows's
+  own install.ps1 actually understands and forwards them verbatim.
+
+  Quick start:
     irm https://gerrrt.github.io/dotfiles-web/install.ps1 | iex
 
-  With module selection (piping to iex can't pass args, so create a scriptblock):
+  To pass switches (piping to iex can't forward args, so create a scriptblock):
     $s = irm https://gerrrt.github.io/dotfiles-web/install.ps1
-    & ([scriptblock]::Create($s)) -Modules core,psmux
+    & ([scriptblock]::Create($s)) -DryRun
+    & ([scriptblock]::Create($s)) -SkipPackages
 
-  Parameters:
-    -Modules a,b     components to include (default: core). 'psmux' = native tmux-alike.
+  Parameters (forwarded to dotfiles-Windows\install.ps1):
     -SkipPackages    only re-wire symlinks; skip the scoop/winget package layer.
+    -DryRun          preview every change and mutate nothing.
     -Dest DIR        where to clone the repo (default: $HOME).
 #>
 [CmdletBinding()]
 param(
-  [string[]] $Modules = @('core'),
-  [switch]   $SkipPackages,
-  [string]   $Dest = $HOME
+  [switch] $SkipPackages,
+  [switch] $DryRun,
+  [string] $Dest = $HOME
 )
 $ErrorActionPreference = 'Stop'
 
@@ -31,17 +36,10 @@ $Repo   = 'dotfiles-Windows'
 $Url    = "https://github.com/$Owner/$Repo"
 $Target = Join-Path $Dest $Repo
 
-# Validate module tokens so a typo fails loudly rather than silently doing nothing.
-foreach ($m in $Modules) {
-  if ($m -notmatch '^[a-z0-9]+$') {
-    Write-Error "install: invalid module token '$m' (expected e.g. core, psmux)"; exit 2
-  }
-}
-
 Write-Host "🤖 dotfiles installer (Windows)"
-Write-Host "   modules : $($Modules -join ',')"
 Write-Host "   repo    : $Repo"
 Write-Host "   target  : $Target"
+if ($DryRun)       { Write-Host "   mode    : dry run (no changes will be made)" }
 if ($SkipPackages) { Write-Host "   mode    : links only (skipping packages)" }
 Write-Host ""
 
@@ -63,8 +61,11 @@ if (-not (Test-Path $installer)) {
   Write-Error "install: $installer not found"; exit 1
 }
 
+# Forward only the switches the underlying installer actually accepts, so a flag
+# passed here genuinely takes effect (no validated-but-ignored parameters).
 $bootstrapArgs = @()
 if ($SkipPackages) { $bootstrapArgs += '-SkipPackages' }
+if ($DryRun)       { $bootstrapArgs += '-DryRun' }
 
 Write-Host "⚙️  .\install.ps1 $($bootstrapArgs -join ' ')"
 & $installer @bootstrapArgs
