@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CommandBlock from '../components/CommandBlock.astro';
+import ModuleBuilder from '../components/ModuleBuilder.astro';
 import { platforms } from '../data/install';
 import { site, release } from '../data/site';
 
@@ -72,6 +73,14 @@ const showSelect = channels.length > 1 || release.current !== 'main';
           )
         }
       </div>
+
+      <!-- custom module builder -->
+      <ModuleBuilder />
+
+      <p class="builder-bridge muted">
+        Prefer the explicit route? The builder is a shortcut — the per-platform steps
+        below are the canonical install, and the one-liner ends by pointing you at them.
+      </p>
 
       <!-- platform tabs -->
       <div class="tabs" id="install-tabs" data-default-ref={release.current}>
@@ -195,6 +204,14 @@ const showSelect = channels.length > 1 || release.current !== 'main';
     border-radius: 8px;
     padding: 0.55rem 0.8rem;
     cursor: pointer;
+  }
+
+  #module-builder {
+    margin-bottom: 1rem;
+  }
+  .builder-bridge {
+    margin: 0 0 2.5rem;
+    font-size: 0.88rem;
   }
 
   .tabs__list {
