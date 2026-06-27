@@ -130,7 +130,7 @@ OS repos).
 | Variable                | Where it lives                          | Purpose                                                                                                              |
 | ----------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `GITHUB_TOKEN`          | auto-injected in **this** repo's CI     | Higher GitHub API rate limit + Actions access for the live repo-card badges during the Astro build. Build is resilient if unset. |
-| `GITHUB_WEBHOOK_SECRET` | a **secret in each dispatching** source repo | A fine-grained **PAT** scoped **Contents: Read and write** on `dotfiles-web` (the permission GitHub's `POST /dispatches` requires), used as the `Authorization: Bearer` token on the `repository_dispatch` POST that triggers a rebuild. GitHub authenticates the caller via this token, so the static site needs no HMAC signature-verification layer of its own. |
+| `GITHUB_WEBHOOK_SECRET` | a **secret in each dispatching** source repo | A fine-grained **PAT** scoped **Contents: Read and write** (`contents:write`) on `dotfiles-web`, used as the `Authorization: Bearer` token on the `repository_dispatch` POST that triggers a rebuild. GitHub authenticates the caller via this token, so the static site needs no HMAC signature-verification layer of its own. |
 
 ### Changing the URL
 
