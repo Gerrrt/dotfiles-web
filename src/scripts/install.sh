@@ -99,6 +99,50 @@ echo "   target  : $TARGET"
 has_module offensive && echo "   note    : offensive role layer requested (Kali)"
 echo
 
+# --- Dependency pre-flight ---
+# Audit the core interactive toolchain and optionally install anything missing
+# before we clone. The per-repo bootstrap installs its own package set too; this
+# is a convenience so a bare machine has the essentials (incl. git) up front.
+# "binary:package" pairs because the probed command and the package name diverge
+# (rg↔ripgrep, nvim↔neovim); indexed arrays keep this portable to macOS bash 3.2.
+DEPS=("zsh:zsh" "nvim:neovim" "tmux:tmux" "fzf:fzf" "git:git" "rg:ripgrep" "bat:bat")
+MISSING_PKGS=()
+for entry in "${DEPS[@]}"; do
+  dep_cmd="${entry%%:*}"; dep_pkg="${entry#*:}"
+  command -v "$dep_cmd" >/dev/null 2>&1 || MISSING_PKGS+=("$dep_pkg")
+done
+
+if [ "${#MISSING_PKGS[@]}" -ne 0 ]; then
+  echo "🔍 Missing dependencies: ${MISSING_PKGS[*]}"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    echo "   (dry run — skipping dependency install)"
+  else
+    # Read the confirmation from the terminal, not stdin: under `curl … | bash`
+    # stdin is the script itself, so a bare `read` would swallow the rest of it.
+    # No tty (e.g. CI) → empty answer → the safe [N] default.
+    printf '   Attempt automated install via your package manager? [y/N]: '
+    read -r dep_reply </dev/tty 2>/dev/null || dep_reply=""
+    if printf '%s' "$dep_reply" | grep -Eq '^([yY][eE][sS]|[yY])$'; then
+      if command -v brew >/dev/null 2>&1; then
+        echo "🍺 Homebrew detected — installing…"
+        brew install "${MISSING_PKGS[@]}"
+      elif command -v apt-get >/dev/null 2>&1; then
+        echo "📦 APT detected — installing…"
+        sudo apt-get update && sudo apt-get install -y "${MISSING_PKGS[@]}"
+      elif command -v pacman >/dev/null 2>&1; then
+        echo "🏹 Pacman detected — installing…"
+        sudo pacman -S --noconfirm "${MISSING_PKGS[@]}"
+      else
+        echo "❌ No supported package manager (brew/apt/pacman) found — install manually." >&2
+      fi
+    else
+      echo "⏭️  Skipping — the repo bootstrap will still install its own package set."
+    fi
+  fi
+  echo
+fi
+
+# git is mandatory even if the user skipped the dependency install above.
 command -v git >/dev/null 2>&1 || { echo "install: git is required but not found on PATH" >&2; exit 1; }
 
 # Translate the module/flag selection into bootstrap arguments.
