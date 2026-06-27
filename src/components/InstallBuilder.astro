@@ -28,7 +28,8 @@ const platforms = [
     label: 'Kali · WSL2',
     repo: 'dotfiles-Kali',
     flags: [
-      { flag: '--dry-run', label: 'Dry run — preview, change nothing' },
+      // No --dry-run: only dotfiles-MacBook's bootstrap implements it; the Kali
+      // bootstrap rejects unknown flags (exit 1). --links-only is the preview-ish option.
       { flag: '--links-only', label: 'Links only — skip apt packages' },
       { flag: '--no-offensive', label: 'Skip the heavy offensive toolchain' },
     ],
@@ -44,7 +45,8 @@ const platforms = [
       { id: 'Gentoo', repo: 'dotfiles-Gentoo', extra: [{ flag: '--no-sync', label: 'Skip emerge --sync on re-runs' }] },
     ],
     flags: [
-      { flag: '--dry-run', label: 'Dry run — preview, change nothing' },
+      // No --dry-run: only dotfiles-MacBook's bootstrap implements it; the Linux
+      // bootstraps reject unknown flags (exit 1). --links-only is the preview-ish option.
       { flag: '--links-only', label: 'Links only — skip package install' },
     ],
   },
