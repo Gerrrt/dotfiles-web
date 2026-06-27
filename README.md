@@ -71,8 +71,11 @@ receiver. A source repo (`dotfiles-core`, an OS repo, …) pings it on push:
 
 ```bash
 curl -fsS -X POST \
+  --max-time 30 --retry 3 --retry-delay 5 --retry-connrefused \
   -H "Authorization: Bearer $GITHUB_WEBHOOK_SECRET" \
   -H "Accept: application/vnd.github+json" \
+  -H "Content-Type: application/json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/Gerrrt/dotfiles-web/dispatches \
   -d '{"event_type":"refresh"}'
 ```
@@ -91,24 +94,43 @@ name: Refresh showcase
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   dispatch:
+    # Any repo under the canonical owner may dispatch; forks are excluded.
+    if: github.repository_owner == 'Gerrrt'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - run: |
+      - env:
+          TOKEN: ${{ secrets.GITHUB_WEBHOOK_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${TOKEN:-}" ]; then
+            echo "::warning::GITHUB_WEBHOOK_SECRET not set — skipping showcase refresh"
+            exit 0
+          fi
           curl -fsS -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_WEBHOOK_SECRET }}" \
+            --max-time 30 --retry 3 --retry-delay 5 --retry-connrefused \
+            -H "Authorization: Bearer ${TOKEN}" \
             -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/Gerrrt/dotfiles-web/dispatches \
             -d '{"event_type":"refresh"}'
 ```
+
+This mirrors the `notify-web.yml` that ships in each source repo (core + the eight
+OS repos).
 
 ### Environment variables / secrets
 
 | Variable                | Where it lives                          | Purpose                                                                                                              |
 | ----------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `GITHUB_TOKEN`          | auto-injected in **this** repo's CI     | Higher GitHub API rate limit + Actions access for the live repo-card badges during the Astro build. Build is resilient if unset. |
-| `GITHUB_WEBHOOK_SECRET` | a **secret in each dispatching** source repo | A fine-grained **PAT** with `contents:write` on `dotfiles-web`, used as the `Authorization: Bearer` token on the `repository_dispatch` POST that triggers a rebuild. GitHub authenticates the caller via this token, so the static site needs no HMAC signature-verification layer of its own. |
+| `GITHUB_WEBHOOK_SECRET` | a **secret in each dispatching** source repo | A fine-grained **PAT** scoped **Contents: Read and write** (`contents:write`) on `dotfiles-web`, used as the `Authorization: Bearer` token on the `repository_dispatch` POST that triggers a rebuild. GitHub authenticates the caller via this token, so the static site needs no HMAC signature-verification layer of its own. |
 
 ### Changing the URL
 
