@@ -56,7 +56,10 @@ const CURATED = [
 function load(entry) {
   const file = join(root, entry.repo, entry.path);
   if (!existsSync(file)) return null;
-  const raw = readFileSync(file, 'utf8').replace(/\s+$/, '');
+  // Strip only trailing NEWLINES (a final \n would otherwise bake an empty last line),
+  // not all trailing whitespace — so the snippet stays a faithful "as-is" copy, intentional
+  // trailing spaces on the last line included.
+  const raw = readFileSync(file, 'utf8').replace(/\n+$/, '');
   const allLines = raw.split('\n');
   const total = allLines.length;
   const truncated = total > MAX_LINES;

@@ -57,6 +57,8 @@ const codeTheme = 'tokyo-night';
             <button
               class:list={['tab', { active: i === 0 }]}
               role="tab"
+              id={`tab-${l.id}`}
+              aria-controls={`panel-${l.id}`}
               data-tab={l.id}
               aria-selected={i === 0 ? 'true' : 'false'}
             >
@@ -72,6 +74,8 @@ const codeTheme = 'tokyo-night';
           <section
             class:list={['panel', { active: i === 0 }]}
             role="tabpanel"
+            id={`panel-${l.id}`}
+            aria-labelledby={`tab-${l.id}`}
             data-panel={l.id}
             hidden={i !== 0}
           >
