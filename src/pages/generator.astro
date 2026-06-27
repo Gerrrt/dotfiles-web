@@ -350,14 +350,19 @@ const payload = { targets, moduleGroups, channels, current: release.current };
     }
 
     // The --only/--skip clause for the current module selection: nothing when all (or,
-    // defensively, none) are picked; otherwise the SHORTER of --skip <unpicked> and
-    // --only <picked>. The shared lib accepts both — emit whichever reads cleaner.
+    // defensively, none) are picked; otherwise the SHORTER RENDERED clause of
+    // --skip <unpicked> / --only <picked> (compare the actual strings, not token
+    // counts — an even split can still differ in length). The shared lib accepts both.
     function moduleClause(t: Target): string {
       if (!t.modules || !allModules.length) return '';
-      const sel = selectedModules();
+      // intersect with the known group keys — selections only ever come from the
+      // rendered checkboxes (data-driven), but never trust the DOM blindly.
+      const sel = selectedModules().filter((k) => allModules.includes(k));
       if (sel.length === 0 || sel.length === allModules.length) return '';
       const unsel = allModules.filter((k) => !sel.includes(k));
-      return unsel.length < sel.length ? `--skip ${unsel.join(',')}` : `--only ${sel.join(',')}`;
+      const only = `--only ${sel.join(',')}`;
+      const skip = `--skip ${unsel.join(',')}`;
+      return skip.length < only.length ? skip : only;
     }
 
     // Enforce at least one module — re-check the box that would empty the set.
