@@ -1,17 +1,23 @@
-// Static endpoint → /install.ps1  (the Windows one-liner target). Built once at
-// deploy time; serves a fixed PowerShell script. Modules are passed by the CLIENT
-// as a script argument, never read from the request. See src/lib/install-scripts.ts.
+// Static install endpoint -> emitted as a plain-text file at `<base>/install.ps1`.
+// The Windows mirror of src/pages/install.ts — same rationale: GitHub Pages is
+// static, so selection is passed as PARAMETERS to pwsh, not a server query string.
+//
+// `irm <url> | iex` cannot forward arguments, so the script defaults to the Core
+// install; to pass modules, fetch then invoke the scriptblock with parameters:
+//
+//   $s = irm https://gerrrt.github.io/dotfiles-web/install.ps1
+//   & ([scriptblock]::Create($s)) -Modules core,psmux
+//
+// Body kept pristine in src/scripts/install.ps1 and imported verbatim (`?raw`).
 import type { APIRoute } from 'astro';
-import { ps1Script } from '../lib/install-scripts';
+import script from '../scripts/install.ps1?raw';
 
 export const prerender = true;
 
-export const GET: APIRoute = ({ site }) => {
-  const base = new URL(import.meta.env.BASE_URL, site ?? 'https://gerrrt.github.io').href;
-  return new Response(ps1Script(base), {
+export const GET: APIRoute = () =>
+  new Response(script, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=600',
+      'Cache-Control': 'no-store, max-age=0',
     },
   });
-};
