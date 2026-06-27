@@ -1,4 +1,7 @@
-# CI gate smoke test
+# DO NOT MERGE — CI gate smoke test
+
+> **Close this PR without merging.** It exists only to exercise the branch-protection
+> gate; merging would leave a stray artifact at the repo root.
 
 Throwaway PR to verify branch-protection on `main`:
 
