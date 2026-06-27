@@ -18,8 +18,9 @@ A single fine-grained PAT, scoped to do exactly one thing: trigger a rebuild of
 3. Fill in:
    - **Token name:** e.g. `dotfiles-web-refresh`
    - **Expiration:** 90 days is the safe default (GitHub emails you before it
-     lapses; when it does, dispatchers silently no-op until you re-paste a new
-     one). "No expiration" works but loses that safety net.
+     lapses; when it does, the dispatchers no-op — log a warning and exit 0 —
+     until you re-paste a new one). "No expiration" works but loses that safety
+     net.
    - **Resource owner:** `Gerrrt`
 4. **Repository access → Only select repositories →** `dotfiles-web`
 5. **Permissions → Repository permissions → Contents → Read and write**
@@ -28,8 +29,11 @@ A single fine-grained PAT, scoped to do exactly one thing: trigger a rebuild of
 6. **Generate token** and **copy it now** — it's shown only once
    (`github_pat_…`).
 
-Scoping to only `dotfiles-web` + only Contents means a leaked token can at most
-trigger doc rebuilds — it can't reach any other repo or code.
+Scoping to only `dotfiles-web` + only Contents keeps the blast radius to this one
+repo — a leaked token can't touch any other repo. Note that **Contents: write**
+still lets it modify `dotfiles-web`'s own contents (not just fire a dispatch), so
+treat it like any real credential: keep it in Actions secrets only, and rotate it
+if it's ever exposed.
 
 ## 2. Add it as a secret in each source repo (9×)
 
