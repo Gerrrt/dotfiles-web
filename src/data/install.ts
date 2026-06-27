@@ -61,7 +61,7 @@ export const installerOptions: InstallerOption[] = [
   {
     id: 'dry-run',
     label: 'Dry run',
-    note: 'Preview every symlink it would create and change nothing (--links-only --dry-run).',
+    note: 'Preview without touching your system. Only the macOS bootstrap has a true preview; on every other target (Fedora/Arch/openSUSE/Alpine/Gentoo/Kali) the launcher reports that no preview mode exists and exits cleanly.',
     kind: 'flag',
     flag: '--dry-run',
     default: false,
