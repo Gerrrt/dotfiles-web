@@ -129,7 +129,7 @@ jobs:
 ```
 
 This mirrors the `notify-web.yml` that ships in each source repo (core + the nine
-OS repos).
+other source repos).
 
 ### Environment variables / secrets
 

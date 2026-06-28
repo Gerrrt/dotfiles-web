@@ -19,6 +19,7 @@ const loadOrder = [
   ['maint / update', 'daily-maintenance surface + the up updater nudge'],
   ['os', 'the OS-native layer (os/<platform>.zsh)'],
   ['offensive', 'Kali only — engagement scaffolding'],
+  ['defense', 'Defense only — detection/hunt tooling'],
   ['local', 'machine-specific overrides (untracked) — always wins'],
 ];
 
@@ -117,7 +118,7 @@ const deepDives = [
 
 <Base
   title="Architecture"
-  description="The three-layer model behind the dotfiles ecosystem: a vendored Core, thin OS-native layers, and an offensive role layer — wired together by git subtree and a canonical zsh load order."
+  description="The three-layer model behind the dotfiles ecosystem: a vendored Core, thin OS-native layers, and operator role layers (offensive Kali, defensive Defense) — wired together by git subtree and a canonical zsh load order."
 >
   <section class="section">
     <div class="container">
@@ -160,9 +161,9 @@ const deepDives = [
           <span class="muted">package manager, clipboard shim, paths</span>
         </div>
         <div class="layer-table__row">
-          <span class="tone-red text-mono">Role / offensive</span>
-          <span><code>dotfiles-Kali</code></span>
-          <span class="muted">engagement scaffolding, C2, Impacket, wordlists</span>
+          <span class="tone-red text-mono">Role</span>
+          <span><code>dotfiles-Kali</code> · <code>dotfiles-Defense</code></span>
+          <span class="muted">offensive engagement (Kali) · defensive detection/hunt (Defense)</span>
         </div>
       </div>
 

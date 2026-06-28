@@ -3,7 +3,7 @@ export const site = {
   name: "dotfiles",
   title: "dotfiles — a ten-repo terminal ecosystem",
   description:
-    "A portable, layered dotfiles ecosystem: one vendored Core (zsh, tmux, Neovim, git, starship, mise) shared across every machine, OS-native layers per platform, and an offensive role layer for Kali. Clone-and-go, fully reproducible.",
+    "A portable, layered dotfiles ecosystem: one vendored Core (zsh, tmux, Neovim, git, starship, mise) shared across every machine, OS-native layers per platform, and operator role layers — offensive for Kali, defensive for Defense. Clone-and-go, fully reproducible.",
   owner: "Gerrrt",
   githubUser: "Gerrrt",
   githubBase: "https://github.com/Gerrrt",
