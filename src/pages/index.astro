@@ -104,7 +104,7 @@ const orderedRepos = [...repos];
           (['core', 'os', 'role'] as const).map((key, i) => {
             const l = layerMeta[key];
             const detail = {
-              core: 'zsh modules, tmux base, Neovim, git, starship, mise, clip. Vendored into every OS repo under core/.',
+              core: 'zsh modules, tmux base, Neovim, git, starship, mise, clip. Vendored into each OS repo under core/ — except Windows, which replicates it natively.',
               os: 'Package manager, paths, clipboard backend, OS tmux/git tweaks. One thin layer per platform.',
               role: 'Operator tooling stacked on an OS layer — offensive on Kali, defensive (detections, hunt/triage) on Defense.',
             }[key];
@@ -135,9 +135,10 @@ const orderedRepos = [...repos];
         <span class="eyebrow">The fleet</span>
         <h2>Repository map</h2>
         <p class="lead">
-          Ten repositories are public today — one Core, vendored into eight of the nine machine repos (Windows replicates Core natively in PowerShell).
-          Each card links straight to its repo, with live stars, last-push, and CI status
-          pulled from GitHub at build time.
+          Ten repositories are public today — one Core, vendored into eight of the nine
+          machine repos (Windows replicates Core natively in PowerShell). Each card links
+          straight to its repo, with live stars, last-push, and CI status pulled from
+          GitHub at build time.
         </p>
       </div>
 
