@@ -42,7 +42,7 @@ const features = [
     icon: '◑',
     accent: 'orange',
     title: 'Three clean layers',
-    body: 'Core (identical everywhere), OS-native (changes with the OS), and Role (offensive scaffolding for Kali). Every file has exactly one home.',
+    body: 'Core (identical everywhere), OS-native (changes with the OS), and Role (offensive scaffolding for Kali, defensive tooling for Defense). Every file has exactly one home.',
   },
   {
     icon: '⌘',
@@ -67,7 +67,7 @@ const orderedRepos = [...repos];
         <span class="eyebrow">Why it’s built this way</span>
         <h2>A system, not a pile of config</h2>
         <p class="lead">
-          Nine repositories, one philosophy: if it changes with the operating system it
+          Ten repositories, one philosophy: if it changes with the operating system it
           isn’t Core; if it changes with you as an operator it isn’t Core. Everything left
           over is Core — and it lives in exactly one place.
         </p>
@@ -106,7 +106,7 @@ const orderedRepos = [...repos];
             const detail = {
               core: 'zsh modules, tmux base, Neovim, git, starship, mise, clip. Vendored into every OS repo under core/.',
               os: 'Package manager, paths, clipboard backend, OS tmux/git tweaks. One thin layer per platform.',
-              role: 'Engagement scaffolding, scope-first workflow, offensive tooling. Stacked only on the Kali node.',
+              role: 'Operator tooling stacked on an OS layer — offensive on Kali, defensive (detections, hunt/triage) on Defense.',
             }[key];
             return (
               <div class:list={['layer-row', `layer-row--${l.accent}`]}>
@@ -135,7 +135,7 @@ const orderedRepos = [...repos];
         <span class="eyebrow">The fleet</span>
         <h2>Repository map</h2>
         <p class="lead">
-          Nine repositories are public today — one Core, vendored into eight machine repos.
+          Ten repositories are public today — one Core, vendored into nine machine repos.
           Each card links straight to its repo, with live stars, last-push, and CI status
           pulled from GitHub at build time.
         </p>

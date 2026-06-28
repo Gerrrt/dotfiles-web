@@ -1,7 +1,7 @@
 # dotfiles-web
 
 The showcase + docs site for the [dotfiles ecosystem](https://github.com/Gerrrt) —
-a nine-repo, three-layer terminal environment (Core → OS-native → Role).
+a ten-repo, three-layer terminal environment (Core → OS-native → Role).
 
 Built with [Astro](https://astro.build), themed in **Tokyo Night**, and deployed to
 **GitHub Pages** at `https://gerrrt.github.io/dotfiles-web/`.
@@ -128,7 +128,7 @@ jobs:
             -d '{"event_type":"refresh"}'
 ```
 
-This mirrors the `notify-web.yml` that ships in each source repo (core + the eight
+This mirrors the `notify-web.yml` that ships in each source repo (core + the nine
 OS repos).
 
 ### Environment variables / secrets
