@@ -38,9 +38,9 @@ export const layerMeta: Record<Layer, { label: string; accent: string; desc: str
     desc: 'The Windows host layer: pwsh, Terminal, the WSL bridge.',
   },
   role: {
-    label: 'Role / offensive',
+    label: 'Role',
     accent: 'red',
-    desc: 'Engagement scaffolding stacked on top of an OS layer.',
+    desc: 'Operator role — offensive or defensive — stacked on top of an OS layer.',
   },
 };
 
@@ -85,8 +85,17 @@ export const repos: Repo[] = [
     status: 'stable',
     icon: '⚔',
     blurb:
-      'The Kali node — the only repo with three layers. Core + apt OS layer + a unique offensive role layer for authorized engagements.',
+      'The Kali node — Core + apt OS layer + a unique offensive role layer for authorized engagements.',
     highlights: ['engagement scaffolding', 'scope-first workflow', 'NetExec / BloodHound CE', 'WSL2 mirrored net'],
+  },
+  {
+    name: 'dotfiles-Defense',
+    layer: 'role',
+    status: 'beta',
+    icon: '⛨',
+    blurb:
+      'The blue mirror of Kali — the defensive role. Detection engineering & investigation: hunt/triage tooling, version-controlled detection content (Sigma, Sysmon, Zeek/Suricata, SIEM), and a Dockerized detection lab. Distro-agnostic.',
+    highlights: ['Sigma / Sysmon / Zeek', 'mkcase hunt workflow', 'Dockerized detection lab', 'distro-agnostic + Core'],
   },
   {
     name: 'dotfiles-Fedora',

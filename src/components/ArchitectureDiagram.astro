@@ -50,7 +50,7 @@ const nodes = consumers.map((r, i) => {
     name: r.name,
     label: short(r.name),
     layer: r.layer,
-    sub: r.layer === 'role' ? 'OS + offensive' : r.layer === 'host' ? 'nvim only' : layerMeta[r.layer].label,
+    sub: r.layer === 'role' ? (r.name === 'dotfiles-Defense' ? 'OS + defensive' : 'OS + offensive') : r.layer === 'host' ? 'nvim only' : layerMeta[r.layer].label,
     x: cx - nodeW / 2,
     cx,
     dashed: r.layer === 'host', // Windows: nvim mirror, not the full subtree

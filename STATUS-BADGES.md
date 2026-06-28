@@ -1,5 +1,5 @@
 <!--
-  STATUS-BADGES.md — copy-paste CI status badges for the nine-repo fleet.
+  STATUS-BADGES.md — copy-paste CI status badges for the ten-repo fleet.
 
   Two ready-to-integrate blocks:
     1. Markdown table  — drop into any README / docs page.
@@ -13,7 +13,7 @@
 
   Workflow file per repo:
     • dotfiles-core / -MacBook / -Windows  → ci.yml   (full existing pipeline)
-    • the six distro/role repos            → lint.yml (shellcheck · shfmt · syntax)
+    • the seven distro/role repos          → lint.yml (shellcheck · shfmt · syntax)
 
   When a repo's primary workflow file is renamed, update the matching row/card.
 -->
@@ -30,6 +30,7 @@ Live build status for every repository in the fleet. Owner: **Gerrrt**.
 | [dotfiles-MacBook](https://github.com/Gerrrt/dotfiles-MacBook) | OS-native | [![CI](https://github.com/Gerrrt/dotfiles-MacBook/actions/workflows/ci.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-MacBook/actions/workflows/ci.yml) |
 | [dotfiles-Windows](https://github.com/Gerrrt/dotfiles-Windows) | Native host | [![CI](https://github.com/Gerrrt/dotfiles-Windows/actions/workflows/ci.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Windows/actions/workflows/ci.yml) |
 | [dotfiles-Kali](https://github.com/Gerrrt/dotfiles-Kali) | Role / offensive | [![lint](https://github.com/Gerrrt/dotfiles-Kali/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Kali/actions/workflows/lint.yml) |
+| [dotfiles-Defense](https://github.com/Gerrrt/dotfiles-Defense) | Role / defensive | [![lint](https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml) |
 | [dotfiles-Fedora](https://github.com/Gerrrt/dotfiles-Fedora) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-Fedora/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Fedora/actions/workflows/lint.yml) |
 | [dotfiles-Arch](https://github.com/Gerrrt/dotfiles-Arch) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-Arch/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Arch/actions/workflows/lint.yml) |
 | [dotfiles-openSUSE](https://github.com/Gerrrt/dotfiles-openSUSE) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-openSUSE/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-openSUSE/actions/workflows/lint.yml) |
@@ -46,7 +47,7 @@ component.
 ```html
 <section class="ci-badges" aria-label="Fleet CI status">
   <h2 class="ci-badges__title">Continuous integration</h2>
-  <p class="ci-badges__lead">Live build status across the nine-repo fleet.</p>
+  <p class="ci-badges__lead">Live build status across the ten-repo fleet.</p>
 
   <div class="ci-badges__grid">
     <!-- Core -->
@@ -87,6 +88,16 @@ component.
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Kali lint status"
         src="https://github.com/Gerrrt/dotfiles-Kali/actions/workflows/lint.yml/badge.svg" />
+    </a>
+
+    <!-- Defense -->
+    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml" target="_blank" rel="noopener">
+      <div class="ci-card__head">
+        <span class="ci-card__name">⛨ dotfiles-Defense</span>
+        <span class="ci-card__layer tone-cyan">Role / defensive</span>
+      </div>
+      <img class="ci-card__badge" loading="lazy" alt="dotfiles-Defense lint status"
+        src="https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml/badge.svg" />
     </a>
 
     <!-- Fedora -->

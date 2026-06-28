@@ -25,7 +25,7 @@ const snippets = data.snippets as Snippet[];
 const layers = [
   { id: 'core', label: 'Core', tagline: 'Authored once, vendored into every repo.' },
   { id: 'os', label: 'OS-native', tagline: 'The same idea, one package manager apart.' },
-  { id: 'role', label: 'Role', tagline: 'The offensive layer, on top of the OS layer.' },
+  { id: 'role', label: 'Role', tagline: 'The operator layer (offensive or defensive), on top of the OS layer.' },
 ] as const;
 
 const byLayer = (id: string) => snippets.filter((s) => s.layer === id);
