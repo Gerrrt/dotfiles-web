@@ -15,9 +15,23 @@ export interface GeneratedMetrics {
   };
   packages: Record<string, number>;
   ci: Record<string, boolean>;
+  drift?: {
+    coreVersion: string | null;
+    repos: Record<string, { ref: string | null; carried: string | null; status: DriftStatus }>;
+  };
 }
 
+export type DriftStatus = 'current' | 'behind' | 'unknown';
+
 export const metrics = generated as GeneratedMetrics;
+
+// Vendoring drift for one consumer repo: which Core release it carries and whether
+// that matches Core's current version. Defensive — an absent repo or a generated.json
+// produced before this field existed degrades to 'unknown' (neutral), never throws.
+export const driftFor = (repo: string): { ref: string | null; status: DriftStatus } => {
+  const d = metrics.drift?.repos?.[repo];
+  return { ref: d?.ref ?? null, status: d?.status ?? 'unknown' };
+};
 
 // Package count for a repo card ("dotfiles-Kali" -> 28). Returns null when the
 // repo ships no package list (e.g. the Windows host uses scoop/winget manifests).

@@ -56,6 +56,7 @@ const osRepos = [
   'dotfiles-MacBook',
   'dotfiles-Windows',
   'dotfiles-Kali',
+  'dotfiles-Defense',
   'dotfiles-Fedora',
   'dotfiles-Arch',
   'dotfiles-openSUSE',
@@ -274,6 +275,43 @@ const feed = changelog
     return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
   });
 
+// ── Vendoring drift: which Core RELEASE each consumer carries vs core.version ──
+// File-only (no git), matching this script's "read the repos" model: each Unix repo
+// stamps core.lock (core_version/core_tag/core_sha); Windows stamps nvim/.core-ref
+// (tag/commit). "current" = same release as Core now; "behind" = an older one;
+// "unknown" = no release recorded yet (e.g. Windows before nvim-sync stamps a tag).
+function readKv(file, key) {
+  if (!existsSync(file)) return null;
+  const m = readFileSync(file, 'utf8').match(new RegExp(`^\\s*${key}\\s*=\\s*(.+?)\\s*$`, 'm'));
+  return m ? m[1] : null;
+}
+const stripV = (s) => (s || '').replace(/^v/, '');
+const driftRepos = {};
+for (const name of osRepos) {
+  let carried = null;
+  let ref = null;
+  if (name === 'dotfiles-Windows') {
+    const cr = join(repoPath(name), 'nvim', '.core-ref');
+    const tag = readKv(cr, 'tag');
+    const commit = readKv(cr, 'commit');
+    carried = tag ? stripV(tag) : null;
+    ref = tag || (commit ? commit.slice(0, 12) : null);
+  } else {
+    const lock = join(repoPath(name), 'core.lock');
+    carried = readKv(lock, 'core_version');
+    const tag = readKv(lock, 'core_tag');
+    const sha = readKv(lock, 'core_sha');
+    ref = tag || (sha ? sha.slice(0, 12) : null);
+  }
+  const status =
+    carried == null || coreVersion == null
+      ? 'unknown'
+      : carried === coreVersion
+        ? 'current'
+        : 'behind';
+  driftRepos[name] = { ref, carried, status };
+}
+
 const data = {
   generatedAt: new Date().toISOString().slice(0, 10),
   fleet: {
@@ -281,6 +319,7 @@ const data = {
     layers: 3,
     loadOrderStages: 15, // tools … update os local (+ offensive on Kali)
   },
+  drift: { coreVersion, repos: driftRepos },
   core: {
     version: coreVersion,
     sourcedModules,
