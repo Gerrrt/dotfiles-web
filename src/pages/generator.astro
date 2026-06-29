@@ -173,7 +173,11 @@ const payload = { targets, moduleGroups, channels, current: release.current };
     flex-direction: column;
     gap: 1.1rem;
   }
-  .gen__group-title {
+  /* Everything below is rendered at runtime by the island (document.createElement),
+     so Astro's scoped-style hash never lands on these nodes. Target them with
+     :global() — otherwise the option rows fall back to unstyled inline text and the
+     label/flag/help spans collapse together (e.g. "Zshzshshell…"). */
+  :global(.gen__group-title) {
     font-family: var(--font-mono);
     font-size: 0.72rem;
     text-transform: uppercase;
@@ -181,7 +185,7 @@ const payload = { targets, moduleGroups, channels, current: release.current };
     color: var(--tn-purple);
     margin: 0 0 0.6rem;
   }
-  .gen__opt {
+  :global(.gen__opt) {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.4rem 0.6rem;
@@ -189,25 +193,25 @@ const payload = { targets, moduleGroups, channels, current: release.current };
     padding: 0.55rem 0;
     cursor: pointer;
   }
-  .gen__opt input {
+  :global(.gen__opt input) {
     margin-top: 0.15rem;
     width: 1rem;
     height: 1rem;
     accent-color: var(--tn-blue);
     cursor: pointer;
   }
-  .gen__opt-name {
+  :global(.gen__opt-name) {
     font-size: 0.9rem;
     color: var(--tn-fg);
     font-weight: 600;
   }
-  .gen__opt-flag {
+  :global(.gen__opt-flag) {
     font-family: var(--font-mono);
     font-size: 0.78rem;
     color: var(--tn-cyan);
     margin-left: 0.4rem;
   }
-  .gen__opt-help {
+  :global(.gen__opt-help) {
     grid-column: 2;
     font-size: 0.82rem;
     color: var(--text-muted);
@@ -259,15 +263,15 @@ const payload = { targets, moduleGroups, channels, current: release.current };
     flex-direction: column;
     gap: 0.5rem;
   }
-  .gen__notes li {
+  :global(.gen__notes li) {
     font-size: 0.85rem;
     color: var(--text-dim);
     line-height: 1.55;
   }
-  .gen__notes li::marker {
+  :global(.gen__notes li::marker) {
     color: var(--tn-comment);
   }
-  .gen__notes code {
+  :global(.gen__notes code) {
     font-size: 0.8rem;
   }
   .gen__modules {
@@ -277,23 +281,23 @@ const payload = { targets, moduleGroups, channels, current: release.current };
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
   }
-  .gen__modules-hint {
+  :global(.gen__modules-hint) {
     margin: 0.2rem 0 0.9rem;
     font-size: 0.82rem;
     color: var(--text-muted);
   }
-  .gen__modules-grid {
+  :global(.gen__modules-grid) {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     gap: 0 1.25rem;
   }
-  /* code-block text colours (these are component-scoped in CommandBlock; the island
-     renders its own block, so re-declare them here). */
-  .cb-prompt {
+  /* code-block text colours: the island re-renders its own block at runtime, so
+     these must be global (a scoped hash would never reach the new nodes). */
+  :global(.gen__out .cb-prompt) {
     color: var(--tn-green);
     user-select: none;
   }
-  .cb-text {
+  :global(.gen__out .cb-text) {
     color: var(--tn-fg);
   }
 </style>

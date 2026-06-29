@@ -91,7 +91,7 @@ export const repos: Repo[] = [
   {
     name: 'dotfiles-Defense',
     layer: 'role',
-    status: 'beta',
+    status: 'stable',
     icon: '⛨',
     blurb:
       'The blue mirror of Kali — the defensive role. Detection engineering & investigation: hunt/triage tooling, version-controlled detection content (Sigma, Sysmon, Zeek/Suricata, SIEM), and a Dockerized detection lab. Distro-agnostic.',
@@ -108,7 +108,7 @@ export const repos: Repo[] = [
   {
     name: 'dotfiles-Arch',
     layer: 'os',
-    status: 'beta',
+    status: 'stable',
     icon: '▲',
     blurb: 'Rolling-release Arch. pacman + AUR + multilib, with a bare-metal stage-0 SETUP guide for a minimal install.',
     highlights: ['pacman + AUR', 'multilib + mirrors', 'stage-0 SETUP.md', 'rolling release'],
@@ -116,7 +116,7 @@ export const repos: Repo[] = [
   {
     name: 'dotfiles-openSUSE',
     layer: 'os',
-    status: 'beta',
+    status: 'stable',
     icon: '❖',
     blurb: 'zypper with the best dependency solver of the bunch. Packman, AppArmor, Btrfs/snapper, Tumbleweed (dup) + Leap (up) aware.',
     highlights: ['zypper + Packman', 'Btrfs / snapper', 'AppArmor', 'Tumbleweed + Leap'],
@@ -124,7 +124,7 @@ export const repos: Repo[] = [
   {
     name: 'dotfiles-Alpine',
     layer: 'os',
-    status: 'beta',
+    status: 'stable',
     icon: '❄',
     blurb: 'The lean outlier: musl libc, busybox, doas. The small-footprint / container / rescue layer — bootstrap detects doas vs sudo.',
     highlights: ['musl + busybox', 'apk + doas', 'container / rescue'],
@@ -132,7 +132,7 @@ export const repos: Repo[] = [
   {
     name: 'dotfiles-Gentoo',
     layer: 'os',
-    status: 'beta',
+    status: 'stable',
     icon: '◢',
     blurb: 'Source-based capstone. emerge + full category/name atoms + USE flags — the most educational build in the fleet.',
     highlights: ['emerge from source', 'USE flags', 'full atoms', '--no-sync re-runs'],

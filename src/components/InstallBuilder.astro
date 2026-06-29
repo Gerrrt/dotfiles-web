@@ -292,7 +292,9 @@ const platforms = [
     color: var(--text-muted);
   }
   .builder__head code,
-  .builder__flag code {
+  /* .builder__flag is built at runtime by the island, so its scoped hash never
+     reaches it — target it globally so the flag token still renders styled. */
+  :global(.builder__flag code) {
     font-family: var(--font-mono);
     font-size: 0.85em;
     color: var(--tn-green);
@@ -303,7 +305,11 @@ const platforms = [
     flex-wrap: wrap;
     gap: 0.4rem;
   }
-  .builder__tab {
+  /* The platform tabs are created in the island script (document.createElement),
+     so they never carry the component's scoped attribute. Style them globally —
+     otherwise they fall back to unstyled native buttons and the active tab never
+     highlights. Same reason the flag rows below are global. */
+  :global(.builder__tab) {
     font-family: var(--font-mono);
     font-size: 0.82rem;
     padding: 0.4rem 0.75rem;
@@ -314,11 +320,11 @@ const platforms = [
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
   }
-  .builder__tab:hover {
+  :global(.builder__tab:hover) {
     color: var(--tn-fg);
     border-color: var(--tn-blue);
   }
-  .builder__tab[aria-checked='true'] {
+  :global(.builder__tab[aria-checked='true']) {
     color: var(--tn-bg-dark);
     background: var(--tn-green);
     border-color: var(--tn-green);
@@ -330,6 +336,13 @@ const platforms = [
     align-items: center;
     gap: 0.6rem;
     font-size: 0.85rem;
+  }
+  /* The island toggles this picker with the `hidden` attribute, but the
+     `display: flex` above outranks `[hidden]`'s UA `display: none`, so it could
+     never actually hide (it leaked onto macOS/Kali/Windows once populated).
+     Restore the attribute's effect explicitly. */
+  .builder__distro[hidden] {
+    display: none;
   }
   .builder__distro label {
     color: var(--text-muted);
@@ -362,14 +375,14 @@ const platforms = [
     color: var(--text-muted);
     padding: 0 0.4rem;
   }
-  .builder__flag {
+  :global(.builder__flag) {
     display: flex;
     align-items: baseline;
     gap: 0.6rem;
     font-size: 0.86rem;
     cursor: pointer;
   }
-  .builder__flag input {
+  :global(.builder__flag input) {
     accent-color: var(--tn-green);
     flex: none;
   }

@@ -178,15 +178,15 @@ function classify(text, category) {
   return CATEGORY_KIND[category] || 'other';
 }
 
-function parseChangelog(name) {
-  const file = join(repoPath(name), 'CHANGELOG.md');
-  if (!existsSync(file)) return null;
-  const lines = readFileSync(file, 'utf8').split('\n');
+// How many version blocks to surface per repo: the newest Unreleased (when it has
+// content) plus the most recent releases, so the page shows real release history
+// instead of only a perpetual "Unreleased" section.
+const MAX_VERSIONS_PER_REPO = 3;
 
-  // First version heading: "## [Unreleased] — suffix" or "## [vX.Y.Z] - 2026-01-02".
-  let i = lines.findIndex((l) => /^##\s+\[.+\]/.test(l));
-  if (i < 0) return null;
-  const head = lines[i].match(/^##\s+\[([^\]]+)\]\s*(?:[-–—]\s*(.*))?$/);
+// Parse one "## [version] - date" block — lines[start..end) — into an entry.
+function parseBlock(name, lines, start, end) {
+  // Heading: "## [Unreleased] — suffix" or "## [vX.Y.Z] - 2026-01-02".
+  const head = lines[start].match(/^##\s+\[([^\]]+)\]\s*(?:[-–—]\s*(.*))?$/);
   const version = head ? head[1].trim() : 'Unreleased';
   let suffix = head && head[2] ? head[2].trim() : '';
   let date;
@@ -195,10 +195,7 @@ function parseChangelog(name) {
     suffix = '';
   }
 
-  // Block runs until the next "## " heading.
-  const block = [];
-  for (i++; i < lines.length && !/^##\s+/.test(lines[i]); i++) block.push(lines[i]);
-
+  const block = lines.slice(start + 1, end);
   const groups = [];
   const pre = []; // prose before the first ### becomes the summary
   let cur = null;
@@ -235,7 +232,7 @@ function parseChangelog(name) {
   }
   flush();
 
-  let summary = [suffix, cleanInline(pre.join(' '))].filter(Boolean).join(' — ');
+  const summary = [suffix, cleanInline(pre.join(' '))].filter(Boolean).join(' — ');
   return {
     repo: name,
     version,
@@ -245,10 +242,23 @@ function parseChangelog(name) {
   };
 }
 
-const changelog = [core, ...osRepos]
-  .filter(has)
-  .map(parseChangelog)
-  .filter((e) => e && e.groups.length);
+// Up to MAX_VERSIONS_PER_REPO non-empty version blocks from a repo's CHANGELOG.md,
+// newest first. Repos without one are skipped.
+function parseChangelog(name) {
+  const file = join(repoPath(name), 'CHANGELOG.md');
+  if (!existsSync(file)) return [];
+  const lines = readFileSync(file, 'utf8').split('\n');
+  const heads = [];
+  for (let j = 0; j < lines.length; j++) if (/^##\s+\[.+\]/.test(lines[j])) heads.push(j);
+  const entries = [];
+  for (let h = 0; h < heads.length && entries.length < MAX_VERSIONS_PER_REPO; h++) {
+    const entry = parseBlock(name, lines, heads[h], heads[h + 1] ?? lines.length);
+    if (entry.groups.length) entries.push(entry);
+  }
+  return entries;
+}
+
+const changelog = [core, ...osRepos].filter(has).flatMap(parseChangelog);
 
 // Flat cross-repo projection for the Diff/Update Feed (design §2.3): one entry per
 // change, newest first, each carrying its repo/version/kind. `core: true` marks a
@@ -339,6 +349,6 @@ console.log(`[collect-metrics] wrote ${out.replace(webRepo + '/', '')}`);
 const { changelog: cl, ...rest } = data;
 console.log(JSON.stringify(rest, null, 2));
 console.log(
-  `[collect-metrics] changelog: ${cl.length} repo(s) — ` +
-    cl.map((e) => `${e.repo} (${e.groups.reduce((n, g) => n + g.items.length, 0)} items)`).join(', ')
+  `[collect-metrics] changelog: ${cl.length} version block(s) — ` +
+    cl.map((e) => `${e.repo}@${e.version} (${e.groups.reduce((n, g) => n + g.items.length, 0)} items)`).join(', ')
 );

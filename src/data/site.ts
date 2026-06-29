@@ -46,8 +46,8 @@ export function isValidRef(channel: string): boolean {
 // against the 'main' sentinel throughout the site, and a literal type would make
 // TypeScript flag those checks as "no overlap" the moment a tag is pinned here.
 export const release: { current: string; channels: readonly string[] } = {
-  current: "v1.2.0",
-  channels: ["v1.2.0", "v1.1.0", "v1.0.0", "main"],
+  current: "v2.2.0",
+  channels: ["v2.2.0", "v2.1.0", "v2.0.0", "main"],
 };
 
 // Fail the build LOUDLY on a malformed channel, at import time — not lazily when a
