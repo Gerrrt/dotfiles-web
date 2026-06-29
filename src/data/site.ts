@@ -1,3 +1,5 @@
+import generated from "./generated.json";
+
 // Central site metadata. Edit these and the whole site updates.
 export const site = {
   name: "dotfiles",
@@ -26,28 +28,39 @@ export function isValidRef(channel: string): boolean {
   return REF_PATTERN.test(channel);
 }
 
-// Release channels surfaced by the docs version-switcher (Get Started page).
-// This is the OPERATOR-maintained source of truth, bumped by hand at release
-// time alongside `scripts/release.sh` in dotfiles-core — the docs deliberately
-// do NOT hit the GitHub API at build time, so every published install command is
-// deterministic and an older rebuild can't silently change which versions it
-// offers.
+// Release channels surfaced by the docs version-switcher (Get Started + Generator).
+// DERIVED FROM THE FLEET, not hand-maintained: scripts/collect-metrics.mjs reads
+// dotfiles-core's CHANGELOG version headers and writes them to
+// `generated.json.releases` (the newest few releases + the rolling 'main'). The site
+// just consumes that snapshot — cut a release, regenerate the data, and the switcher
+// updates itself. The docs still never hit the GitHub API at build time, so every
+// published install command stays deterministic and an older rebuild can't silently
+// change which versions it offers.
 //
-//   • 'main' is always the rolling channel — clones track the default branch,
-//     so no `--branch` flag is emitted.
-//   • Each tag (e.g. 'v1.0.0') pins a hermetic release: because Core is vendored
-//     via `git subtree --squash`, a tagged OS-repo clone carries the exact Core
-//     it was tested with, so the same three-command install works for ANY tag.
+//   • 'main' is always the rolling channel — clones track the default branch, so no
+//     `--branch` flag is emitted.
+//   • Each tag (e.g. 'v2.2.0') pins a hermetic release: because Core is vendored via
+//     `git subtree --squash`, a tagged OS-repo clone carries the exact Core it was
+//     tested with, so the same three-command install works for ANY tag.
 //
-// When you cut the first release: set `current` to the new tag and prepend it to
-// `channels` (newest first). Until then both stay at 'main' (unreleased) and the
-// switcher renders a static "rolling" pill instead of a dropdown.
-// Typed with widened `string` fields (not `as const`): `current` is compared
-// against the 'main' sentinel throughout the site, and a literal type would make
-// TypeScript flag those checks as "no overlap" the moment a tag is pinned here.
+// Defensive: an older generated.json without `releases`, or any malformed entry,
+// degrades to a main-only rolling pill rather than throwing. Typed with widened
+// `string` fields (not `as const`) so the 'main' sentinel comparisons type-check.
+const fleetReleases = (generated as {
+  releases?: { current?: string; channels?: readonly string[] };
+}).releases;
+const fleetChannels = (fleetReleases?.channels ?? []).filter(
+  (c): c is string => typeof c === "string" && (c === "main" || isValidRef(c)),
+);
+const channels = fleetChannels.length ? fleetChannels : ["main"];
+const current =
+  fleetReleases?.current &&
+  (fleetReleases.current === "main" || isValidRef(fleetReleases.current))
+    ? fleetReleases.current
+    : channels[0];
 export const release: { current: string; channels: readonly string[] } = {
-  current: "v1.2.0",
-  channels: ["v1.2.0", "v1.1.0", "v1.0.0", "main"],
+  current,
+  channels,
 };
 
 // Fail the build LOUDLY on a malformed channel, at import time — not lazily when a
