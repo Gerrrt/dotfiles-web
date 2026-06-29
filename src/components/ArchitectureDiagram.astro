@@ -9,12 +9,23 @@
 // tokens only (matches the interactive-features design constraints).
 import { repos, layerMeta } from '../data/repos';
 import type { Layer } from '../data/repos';
+import { driftFor, metrics } from '../data/metrics';
+import type { DriftStatus } from '../data/metrics';
 
 const accentVar: Record<string, string> = {
   purple: 'var(--tn-purple)',
   blue: 'var(--tn-blue)',
   cyan: 'var(--tn-cyan)',
   red: 'var(--tn-red)',
+};
+
+// Live vendoring drift (from generated.json): colour each edge by whether the repo
+// carries Core's CURRENT release. 'unknown' stays neutral so an un-regenerated
+// generated.json just renders the old static look — never a misleading red.
+const driftColor: Record<DriftStatus, string | null> = {
+  current: 'var(--tn-green)',
+  behind: 'var(--tn-orange)',
+  unknown: null,
 };
 
 const core = repos.find((r) => r.layer === 'core')!;
@@ -46,6 +57,7 @@ const coreBottom = coreY + coreH;
 
 const nodes = consumers.map((r, i) => {
   const cx = padX + slot * (i + 0.5);
+  const d = driftFor(r.name);
   return {
     name: r.name,
     label: short(r.name),
@@ -55,8 +67,16 @@ const nodes = consumers.map((r, i) => {
     cx,
     dashed: r.layer === 'host', // Windows: nvim mirror, not the full subtree
     accent: accentVar[layerMeta[r.layer].accent],
+    driftStatus: d.status,
+    driftRef: d.ref, // the release/sha this repo currently carries
+    driftColor: driftColor[d.status],
   };
 });
+
+// Only surface the drift legend/labels when generated.json actually carries the
+// data (any repo resolved to current/behind) — otherwise the diagram stays in its
+// neutral, pre-drift look.
+const hasDrift = nodes.some((n) => n.driftStatus !== 'unknown');
 
 // cubic bezier from the core hub's bottom-centre to each node's top-centre
 const edge = (cx: number) => {
@@ -71,7 +91,9 @@ const edge = (cx: number) => {
     <desc id="arch-dg-d">
       dotfiles-core is vendored into {consumers.filter((c) => c.layer !== 'host').length} machine
       repositories via git subtree (solid edges); dotfiles-Windows mirrors only the Neovim config
-      via nvim-sync.ps1 (dashed edge).
+      via nvim-sync.ps1 (dashed edge). Edges are coloured by live vendoring drift — green when the
+      repo carries Core's current release, orange when it is behind — from each repo's recorded
+      provenance.
     </desc>
 
     <!-- edges: solid = full subtree, dashed = nvim-only mirror -->
@@ -80,6 +102,7 @@ const edge = (cx: number) => {
         <path
           d={edge(n.cx)}
           class={n.dashed ? 'arch-edge arch-edge--mirror' : 'arch-edge'}
+          style={n.driftColor ? `stroke:${n.driftColor};opacity:0.85` : undefined}
           fill="none"
         />
       ))
@@ -116,6 +139,12 @@ const edge = (cx: number) => {
           <text x={n.cx} y={rowY + 43} class="arch-node__sub" text-anchor="middle">
             {n.sub}
           </text>
+          {n.driftStatus !== 'unknown' && (
+            <circle cx={n.cx} cy={rowY} r="4.5" class="arch-dot" style={`fill:${n.driftColor}`} />
+          )}
+          {n.driftRef && (
+            <text x={n.cx} y={rowY + nodeH + 14} class="arch-ref" text-anchor="middle">{n.driftRef}</text>
+          )}
         </g>
       ))
     }
@@ -126,6 +155,19 @@ const edge = (cx: number) => {
       <text x="42" y="10" class="arch-legend">git subtree — full Core, self-contained</text>
       <line x1="0" y1="30" x2="34" y2="30" class="arch-edge arch-edge--mirror" />
       <text x="42" y="34" class="arch-legend">nvim mirror — nvim-sync.ps1 (Windows host)</text>
+
+      {
+        hasDrift && (
+          <g>
+            <circle cx="6" cy="54" r="4.5" style="fill:var(--tn-green)" />
+            <text x="20" y="58" class="arch-legend">
+              in sync with Core{metrics.drift?.coreVersion ? ` v${metrics.drift.coreVersion}` : ''}
+            </text>
+            <circle cx="220" cy="54" r="4.5" style="fill:var(--tn-orange)" />
+            <text x="234" y="58" class="arch-legend">behind — run a sync</text>
+          </g>
+        )
+      }
 
       <g transform={`translate(${W - 2 * padX - 366}, 0)`}>
         {
@@ -146,6 +188,15 @@ const edge = (cx: number) => {
     <code>git subtree</code> — each clone is self-contained (no submodule init).
     <strong>dotfiles-Kali</strong> stacks a Role layer on its OS layer; <strong>dotfiles-Windows</strong>
     carries no <code>core/</code> subtree and mirrors only the Neovim config.
+    {
+      hasDrift && (
+        <span>
+          {' '}Edge colour tracks live vendoring drift — green = carrying Core
+          {metrics.drift?.coreVersion ? ` v${metrics.drift.coreVersion}` : ''}, orange = behind (run
+          a sync). Each repo's label shows the release it currently vendors.
+        </span>
+      )
+    }
   </figcaption>
 </figure>
 
@@ -200,6 +251,18 @@ const edge = (cx: number) => {
     fill: var(--tn-comment);
     font:
       400 11px/1 ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+  /* carried-release label under each consumer node (live drift) */
+  .arch-ref {
+    fill: var(--tn-comment);
+    font:
+      600 9.5px/1 ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    letter-spacing: 0.02em;
+  }
+  /* sync dot where each edge meets its node; bg stroke keeps it crisp on the border */
+  .arch-dot {
+    stroke: var(--tn-bg);
+    stroke-width: 1.5;
   }
   figcaption {
     color: var(--tn-muted);
