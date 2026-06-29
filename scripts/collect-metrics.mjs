@@ -322,6 +322,26 @@ for (const name of osRepos) {
   driftRepos[name] = { ref, carried, status };
 }
 
+// ── Release channels for the docs version-switcher (derived from the fleet) ──
+// dotfiles-core's CHANGELOG version headers are the canonical release list; the
+// switcher offers the newest few releases plus the rolling 'main'. Cutting a
+// release and regenerating this file updates the switcher automatically, so
+// src/data/site.ts never hand-maintains a version list. Degrades to main-only
+// when core has no tagged releases yet.
+const MAX_RELEASE_CHANNELS = 3;
+function deriveReleases() {
+  const file = join(coreDir, 'CHANGELOG.md');
+  if (!existsSync(file)) return { current: 'main', channels: ['main'] };
+  const tags = [];
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    const m = line.match(/^##\s+\[(v\d+\.\d+\.\d+)\]/); // released headers only (skip [Unreleased])
+    if (m && !tags.includes(m[1])) tags.push(m[1]); // CHANGELOG is newest-first
+  }
+  if (!tags.length) return { current: 'main', channels: ['main'] };
+  return { current: tags[0], channels: [...tags.slice(0, MAX_RELEASE_CHANNELS), 'main'] };
+}
+const releases = deriveReleases();
+
 const data = {
   generatedAt: new Date().toISOString().slice(0, 10),
   fleet: {
@@ -329,6 +349,7 @@ const data = {
     layers: 3,
     loadOrderStages: 15, // tools … update os local (+ offensive on Kali)
   },
+  releases,
   drift: { coreVersion, repos: driftRepos },
   core: {
     version: coreVersion,
