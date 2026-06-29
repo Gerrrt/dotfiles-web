@@ -36,7 +36,12 @@
   --bg-code: var(--tn-bg-dark);
   --text: var(--tn-fg);
   --text-dim: var(--tn-fg-dim);
-  --text-muted: var(--tn-comment);
+  /* UI "muted" text token. Deliberately NOT --tn-comment (#565f89): that canonical
+     Tokyo Night comment colour only reaches ~2.8:1 on our backgrounds and fails
+     WCAG AA. This brighter slate clears ~5:1 (AA for normal text) while staying
+     clearly secondary to --text-dim. The literal --tn-comment is still used for
+     syntax-highlight comments, where dimness reads as intended. */
+  --text-muted: #828bb8;
   --accent: var(--tn-blue);
   --accent-2: var(--tn-purple);
   --border: var(--tn-border);
@@ -399,9 +404,15 @@ pre {
   border-radius: var(--radius-sm);
   margin: 0;
 }
+/* Consecutive blocks read as one tight stack rather than drifting apart. */
+.codeblock + .codeblock {
+  margin-top: 0.6rem;
+}
 .codeblock pre {
   margin: 0;
   padding: 1rem 1.1rem;
+  /* keep the first line clear of the floating copy button */
+  padding-right: 5.25rem;
   overflow-x: auto;
   font-size: 0.85rem;
   line-height: 1.6;
@@ -409,25 +420,49 @@ pre {
 }
 .codeblock .copy {
   position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  background: var(--tn-surface-2);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-dim);
+  background: color-mix(in srgb, var(--tn-surface-2) 85%, transparent);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.25rem 0.55rem;
+  border-radius: 7px;
+  padding: 0.32rem 0.55rem;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
 }
 .codeblock .copy:hover {
   color: var(--tn-cyan);
   border-color: var(--tn-border-bright);
 }
+.codeblock .copy:active {
+  transform: translateY(1px);
+}
 .codeblock .copy.copied {
   color: var(--tn-green);
   border-color: var(--tn-green);
+}
+.copy__icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: none;
+}
+.copy__icon--check {
+  display: none;
+}
+.copy.copied .copy__icon--clip {
+  display: none;
+}
+.copy.copied .copy__icon--check {
+  display: inline;
 }
 
 /* ------------------------------------------------------------------ utils */

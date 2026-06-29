@@ -176,18 +176,24 @@ const kbdRoutes = {
     </script>
 
     <script>
-      // Global copy-to-clipboard for every [data-copy] button.
+      // Global copy-to-clipboard for every [data-copy] button. The button carries an
+      // icon pair (clipboard ⇄ check, swapped by the `.copied` class in CSS) plus a
+      // `.copy__label` span; we flip the label text and class, then restore both after
+      // a beat. Falls back to mutating the button text if no label span is present.
       document.addEventListener('click', async (e) => {
         const btn = (e.target as HTMLElement).closest('[data-copy]') as HTMLButtonElement | null;
         if (!btn) return;
         const code = btn.getAttribute('data-code') ?? btn.parentElement?.querySelector('code')?.textContent ?? '';
         try {
           await navigator.clipboard.writeText(code.trim());
-          const prev = btn.textContent;
-          btn.textContent = 'copied';
+          const label = btn.querySelector<HTMLElement>('.copy__label');
+          const prev = label ? label.textContent : btn.textContent;
+          if (label) label.textContent = 'Copied!';
+          else btn.textContent = 'Copied!';
           btn.classList.add('copied');
           setTimeout(() => {
-            btn.textContent = prev;
+            if (label) label.textContent = prev;
+            else btn.textContent = prev;
             btn.classList.remove('copied');
           }, 1600);
         } catch {

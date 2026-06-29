@@ -13,10 +13,14 @@
     "snippets": "node scripts/collect-snippets.mjs",
     "data": "npm run metrics && npm run snippets",
     "verify:flags": "node scripts/verify-bootstrap-flags.mjs",
+    "check": "astro check",
     "astro": "astro"
   },
   "devDependencies": {
-    "astro": "^6.4.6"
+    "@astrojs/check": "^0.9.9",
+    "@types/node": "^22.20.0",
+    "astro": "^6.4.6",
+    "typescript": "^6.0.3"
   },
   "overrides": {
     "esbuild": "^0.28.1"

@@ -12,16 +12,19 @@ const lines = code.split('\n');
 ---
 
 <div class="codeblock">
-  <button class="copy" type="button" data-copy data-code={code} aria-label="Copy command">copy</button>
+  <button class="copy" type="button" data-copy data-code={code} aria-label="Copy command">
+    <svg class="copy__icon copy__icon--clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+    <svg class="copy__icon copy__icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span class="copy__label">Copy</span>
+  </button>
+  {/* Each line is rendered on a single source line on purpose: inside a
+      `white-space: pre` block, any indentation/newlines the template would add
+      between these spans get rendered as literal blank lines, which is what
+      previously opened large vertical gaps inside command blocks. */}
   <pre><code>{lines.map((line, i) => {
     const isComment = line.trimStart().startsWith('#');
-    return (
-      <span class="cb-line">
-        {showPrompt && !isComment && line.trim() !== '' && <span class="cb-prompt">{prompt} </span>}
-        <span class:list={['cb-text', { 'cb-comment': isComment }]}>{line}</span>
-        {i < lines.length - 1 ? '\n' : ''}
-      </span>
-    );
+    const showP = showPrompt && !isComment && line.trim() !== '';
+    return <span class="cb-line">{showP && <span class="cb-prompt">{prompt} </span>}<span class:list={['cb-text', { 'cb-comment': isComment }]}>{line}</span>{i < lines.length - 1 ? '\n' : ''}</span>;
   })}</code></pre>
 </div>
 
