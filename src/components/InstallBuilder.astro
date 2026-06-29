@@ -84,7 +84,11 @@ const platforms = [
   </fieldset>
 
   <div class="codeblock builder__out">
-    <button class="copy" type="button" data-copy aria-label="Copy command">copy</button>
+    <button class="copy" type="button" data-copy aria-label="Copy command">
+      <svg class="copy__icon copy__icon--clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      <svg class="copy__icon copy__icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      <span class="copy__label">Copy</span>
+    </button>
     <pre aria-live="polite" aria-label="Generated install command"><code id="ib-out"></code></pre>
   </div>
 
@@ -96,7 +100,7 @@ const platforms = [
   </noscript>
 </div>
 
-<script define:vars={{ platforms, GH }}>
+<script is:inline define:vars={{ platforms, GH }}>
   (() => {
     const tabsEl = document.getElementById('ib-tabs');
     const distroWrap = document.getElementById('ib-distro');

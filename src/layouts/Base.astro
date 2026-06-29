@@ -176,20 +176,35 @@ const kbdRoutes = {
     </script>
 
     <script>
-      // Global copy-to-clipboard for every [data-copy] button.
+      // Global copy-to-clipboard for every [data-copy] button. The button carries an
+      // icon pair (clipboard ⇄ check, swapped by the `.copied` class in CSS) plus a
+      // `.copy__label` span; we flip the label text and class, then restore both after
+      // a beat. Falls back to mutating the button text if no label span is present.
+      const copyRestoreTimers = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
       document.addEventListener('click', async (e) => {
         const btn = (e.target as HTMLElement).closest('[data-copy]') as HTMLButtonElement | null;
         if (!btn) return;
         const code = btn.getAttribute('data-code') ?? btn.parentElement?.querySelector('code')?.textContent ?? '';
         try {
           await navigator.clipboard.writeText(code.trim());
-          const prev = btn.textContent;
-          btn.textContent = 'copied';
+          const label = btn.querySelector<HTMLElement>('.copy__label');
+          const target = label ?? btn;
+          // Cache the pristine label exactly once: a rapid re-click while "Copied!"
+          // is still showing must not capture the success text as the "original".
+          if (btn.dataset.copyLabel === undefined) btn.dataset.copyLabel = target.textContent ?? '';
+          // Cancel any in-flight restore so overlapping clicks can't fight.
+          const pending = copyRestoreTimers.get(btn);
+          if (pending) clearTimeout(pending);
+          target.textContent = 'Copied!';
           btn.classList.add('copied');
-          setTimeout(() => {
-            btn.textContent = prev;
-            btn.classList.remove('copied');
-          }, 1600);
+          copyRestoreTimers.set(
+            btn,
+            setTimeout(() => {
+              target.textContent = btn.dataset.copyLabel ?? '';
+              btn.classList.remove('copied');
+              copyRestoreTimers.delete(btn);
+            }, 1600)
+          );
         } catch {
           /* clipboard unavailable */
         }

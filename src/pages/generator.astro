@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import { targets, moduleGroups } from '../data/bootstrap';
 import { release, isValidRef, cloneRef } from '../data/site';
 import { site } from '../data/site';
+import { withBase } from '../lib/url';
 
 // Channels for the optional version pin, same logic as getting-started.astro:
 // always include `current` so a pinned-but-unlisted release still surfaces.
@@ -99,7 +100,11 @@ const payload = { targets, moduleGroups, channels, current: release.current };
             <a class="gen__repo text-mono" id="gen-repo" href={`${site.githubBase}/${def.repo}`} target="_blank" rel="noopener">{def.repo} ↗</a>
           </div>
           <div class="codeblock">
-            <button class="copy" type="button" data-copy data-code={defCode} aria-label="Copy command">copy</button>
+            <button class="copy" type="button" data-copy data-code={defCode} aria-label="Copy command">
+              <svg class="copy__icon copy__icon--clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <svg class="copy__icon copy__icon--check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span class="copy__label">Copy</span>
+            </button>
             <pre><code id="gen-code">{defLines.map((line, i) => (
               <span class="cb-line"><span class="cb-prompt">$ </span><span class="cb-text">{line}</span>{i < defLines.length - 1 ? '\n' : ''}</span>
             ))}</code></pre>
@@ -110,7 +115,7 @@ const payload = { targets, moduleGroups, channels, current: release.current };
 
       <p class="muted center" style="margin-top:2rem;">
         Want the full step-by-step with prerequisites and a dry-run preview? See
-        <a href="/getting-started">Get Started</a>. Generated commands only ever use flags
+        <a href={withBase('/getting-started')}>Get Started</a>. Generated commands only ever use flags
         verified against each repo’s bootstrap.
       </p>
     </div>

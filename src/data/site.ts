@@ -42,10 +42,13 @@ export function isValidRef(channel: string): boolean {
 // When you cut the first release: set `current` to the new tag and prepend it to
 // `channels` (newest first). Until then both stay at 'main' (unreleased) and the
 // switcher renders a static "rolling" pill instead of a dropdown.
-export const release = {
+// Typed with widened `string` fields (not `as const`): `current` is compared
+// against the 'main' sentinel throughout the site, and a literal type would make
+// TypeScript flag those checks as "no overlap" the moment a tag is pinned here.
+export const release: { current: string; channels: readonly string[] } = {
   current: "v1.2.0",
-  channels: ["v1.2.0", "v1.1.0", "v1.0.0", "main"] as readonly string[],
-} as const;
+  channels: ["v1.2.0", "v1.1.0", "v1.0.0", "main"],
+};
 
 // Fail the build LOUDLY on a malformed channel, at import time — not lazily when a
 // visitor happens to select it. 'main' is the sentinel rolling channel; every other
