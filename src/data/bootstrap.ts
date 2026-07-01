@@ -34,7 +34,7 @@ export interface BootstrapFlag {
 export interface BootstrapTarget {
   id: string; // 'macos', 'kali', 'fedora', ...
   label: string; // tab label
-  repo: string; // repo slug under Gerrrt
+  repo: string; // repo slug under dotgibson
   dialect: Dialect; // drives clone form, prompt glyph, and flag syntax
   entry: string; // './bootstrap.sh' | '.\\install.ps1'
   cloneDir?: string; // sh only; defaults to ~/<repo> when unset

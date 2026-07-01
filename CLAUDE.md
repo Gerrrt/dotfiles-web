@@ -1,7 +1,7 @@
 # CLAUDE.md — dotfiles-web
 
 Project memory for Claude Code, auto-loaded every session. The system's
-source-of-truth rules live in [dotfiles-core](https://github.com/Gerrrt/dotfiles-core).
+source-of-truth rules live in [dotfiles-core](https://github.com/dotgibson/dotfiles-core).
 
 ## What this repo is
 

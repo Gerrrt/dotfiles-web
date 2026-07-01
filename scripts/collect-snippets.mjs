@@ -72,7 +72,7 @@ function load(entry) {
     lang: entry.lang,
     title: entry.title,
     blurb: entry.blurb,
-    url: `https://github.com/Gerrrt/${entry.repo}/blob/main/${entry.path}`,
+    url: `https://github.com/dotgibson/${entry.repo}/blob/main/${entry.path}`,
     content,
     total,
     shown: truncated ? MAX_LINES : total,

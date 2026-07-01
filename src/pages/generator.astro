@@ -322,7 +322,7 @@ const payload = { targets, moduleGroups, channels, current: release.current };
   const copyBtn = root?.querySelector<HTMLButtonElement>('[data-copy]');
 
   const REF_OK = /^[A-Za-z0-9._/-]+$/; // identical to site.ts REF_PATTERN
-  const GH = 'https://github.com/Gerrrt';
+  const GH = 'https://github.com/dotgibson';
 
   if (root && codeEl && optionsEl) {
     const data = JSON.parse(root.dataset.gen || '{}') as { targets: Target[]; moduleGroups: ModuleGroup[]; current: string };

@@ -223,7 +223,7 @@ function synthesize(t: BootstrapTarget, selected: Set<string>, ref: string): str
   // covers any direct caller. The UI only ever passes a pre-validated channel.
   if (ref !== 'main' && !isValidRef(ref)) throw new Error(`invalid ref: ${ref}`);
   const refFlag = cloneRef(ref);             // '' for main, '--branch <tag> ' otherwise
-  const url = `https://github.com/Gerrrt/${t.repo}`;
+  const url = `https://github.com/dotgibson/${t.repo}`;
   const dir = t.cloneDir ?? `~/${t.repo}`;   // default so we never emit `undefined`
   const clone = t.dialect === 'sh'
     ? `git clone ${refFlag}${url} ${dir}\ncd ${dir}`
@@ -420,7 +420,7 @@ set -eu
 detect_repo() { /* uname + /etc/os-release + WSL + ID_LIKE → echo repo name */ }
 REPO="$(detect_repo)" || { echo "unsupported OS; pick a repo manually: <list>"; exit 1; }
 DEST="${DOTFILES_DIR:-$HOME/$REPO}"
-[ -d "$DEST/.git" ] || git clone "https://github.com/Gerrrt/$REPO" "$DEST"
+[ -d "$DEST/.git" ] || git clone "https://github.com/dotgibson/$REPO" "$DEST"
 cd "$DEST"
 exec ./bootstrap.sh "$@"      # all generator flags forwarded untouched
 ```

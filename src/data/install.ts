@@ -27,7 +27,7 @@ export const platforms: Platform[] = [
       {
         title: 'Clone the repo',
         body: 'The Core layer is already vendored under core/ — no submodule flags.',
-        code: 'git clone https://github.com/Gerrrt/dotfiles-MacBook ~/dotfiles-MacBook\ncd ~/dotfiles-MacBook',
+        code: 'git clone https://github.com/dotgibson/dotfiles-MacBook ~/dotfiles-MacBook\ncd ~/dotfiles-MacBook',
       },
       {
         title: 'Preview the plan (optional)',
@@ -56,13 +56,13 @@ export const platforms: Platform[] = [
       {
         title: 'One-line bootstrap',
         body: 'Clones the repo and runs the installer. Needs git and pwsh 7+.',
-        code: 'irm https://raw.githubusercontent.com/Gerrrt/dotfiles-Windows/main/bootstrap.ps1 | iex',
+        code: 'irm https://raw.githubusercontent.com/dotgibson/dotfiles-Windows/main/bootstrap.ps1 | iex',
         lang: 'powershell',
       },
       {
         title: 'Or install manually',
         body: 'Clone, then run the installer. -DryRun previews everything; -SkipPackages only re-wires links.',
-        code: 'git clone https://github.com/Gerrrt/dotfiles-Windows.git\ncd dotfiles-Windows\n.\\install.ps1',
+        code: 'git clone https://github.com/dotgibson/dotfiles-Windows.git\ncd dotfiles-Windows\n.\\install.ps1',
         lang: 'powershell',
       },
       {
@@ -82,7 +82,7 @@ export const platforms: Platform[] = [
     steps: [
       {
         title: 'Clone the repo',
-        code: 'git clone https://github.com/Gerrrt/dotfiles-Kali ~/dotfiles-Kali\ncd ~/dotfiles-Kali',
+        code: 'git clone https://github.com/dotgibson/dotfiles-Kali ~/dotfiles-Kali\ncd ~/dotfiles-Kali',
       },
       {
         title: 'Provision + wire',
@@ -107,7 +107,7 @@ export const platforms: Platform[] = [
       {
         title: 'Clone your distro’s repo',
         body: 'Swap Fedora for Arch, openSUSE, Alpine, or Gentoo. Core is already vendored under core/, so the clone is self-contained.',
-        code: 'git clone https://github.com/Gerrrt/dotfiles-Fedora ~/dotfiles-Fedora\ncd ~/dotfiles-Fedora',
+        code: 'git clone https://github.com/dotgibson/dotfiles-Fedora ~/dotfiles-Fedora\ncd ~/dotfiles-Fedora',
       },
       {
         title: 'Preview the symlink plan (optional)',

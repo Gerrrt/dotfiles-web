@@ -75,7 +75,7 @@ const macDesktop = [
 ];
 
 // Deep-dive docs that live in the repos but were previously unlinked from the site.
-const blob = (repo: string, path: string) => `https://github.com/Gerrrt/${repo}/blob/main/${path}`;
+const blob = (repo: string, path: string) => `https://github.com/dotgibson/${repo}/blob/main/${path}`;
 const deepDives = [
   {
     title: 'Porting matrix',
@@ -182,10 +182,10 @@ const deepDives = [
       </p>
       <CommandBlock
         code={`# one-time, inside an OS repo:
-git subtree add --prefix=core https://github.com/Gerrrt/dotfiles-core main --squash
+git subtree add --prefix=core https://github.com/dotgibson/dotfiles-core main --squash
 
 # later, to pull Core updates down:
-git subtree pull --prefix=core https://github.com/Gerrrt/dotfiles-core main --squash`}
+git subtree pull --prefix=core https://github.com/dotgibson/dotfiles-core main --squash`}
       />
       <p class="muted">
         Maintainers fan a Core change out to every OS repo in one shot with
