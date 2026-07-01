@@ -25,8 +25,8 @@ jobs:
   check:
     runs-on: ubuntu-latest
     # Only meaningful on the canonical owner's repo — forks won't have the
-    # source repos under Gerrrt and shouldn't fail on this.
-    if: github.repository_owner == 'Gerrrt'
+    # source repos under dotgibson and shouldn't fail on this.
+    if: github.repository_owner == 'dotgibson'
     steps:
       - name: Checkout
         uses: actions/checkout@v4

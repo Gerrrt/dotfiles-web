@@ -5,15 +5,15 @@ Astro, Tokyo Night, GitHub Pages.
 
 `astro` · `tokyo-night` · `pages`
 
-[![live site](https://img.shields.io/badge/live-site-bb9af7?style=flat-square)](https://gerrrt.github.io/dotfiles-web/)
+[![live site](https://img.shields.io/badge/live-site-bb9af7?style=flat-square)](https://dotgibson.github.io/dotfiles-web/)
 
 ---
 
-The showcase + docs site for the [dotfiles ecosystem](https://github.com/Gerrrt) —
+The showcase + docs site for the [dotfiles ecosystem](https://github.com/dotgibson) —
 a ten-repo, three-layer terminal environment (Core → OS-native → Role).
 
 Built with [Astro](https://astro.build), themed in **Tokyo Night**, and deployed to
-**GitHub Pages** at `https://gerrrt.github.io/dotfiles-web/`.
+**GitHub Pages** at `https://dotgibson.github.io/dotfiles-web/`.
 
 ## What's here
 
@@ -91,7 +91,7 @@ curl -fsS -X POST \
   -H "Accept: application/vnd.github+json" \
   -H "Content-Type: application/json" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/Gerrrt/dotfiles-web/dispatches \
+  https://api.github.com/repos/dotgibson/dotfiles-web/dispatches \
   -d '{"event_type":"refresh"}'
 ```
 
@@ -115,7 +115,7 @@ permissions:
 jobs:
   dispatch:
     # Any repo under the canonical owner may dispatch; forks are excluded.
-    if: github.repository_owner == 'Gerrrt'
+    if: github.repository_owner == 'dotgibson'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -133,7 +133,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Content-Type: application/json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/Gerrrt/dotfiles-web/dispatches \
+            https://api.github.com/repos/dotgibson/dotfiles-web/dispatches \
             -d '{"event_type":"refresh"}'
 ```
 
@@ -150,5 +150,5 @@ other source repos).
 ### Changing the URL
 
 The site is configured for a GitHub Pages *project* path in `astro.config.mjs`
-(`site` + `base`). To serve from a custom domain or a user site (`gerrrt.github.io`),
+(`site` + `base`). To serve from a custom domain or a user site (`dotgibson.github.io`),
 set `base: '/'`, update `site`, and add a `public/CNAME` for a custom domain.

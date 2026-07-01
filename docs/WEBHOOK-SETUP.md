@@ -21,7 +21,7 @@ A single fine-grained PAT, scoped to do exactly one thing: trigger a rebuild of
      lapses; when it does, the dispatchers no-op — log a warning and exit 0 —
      until you re-paste a new one). "No expiration" works but loses that safety
      net.
-   - **Resource owner:** `Gerrrt`
+   - **Resource owner:** `dotgibson`
 4. **Repository access → Only select repositories →** `dotfiles-web`
 5. **Permissions → Repository permissions → Contents → Read and write**
    (`contents:write`). Leave the rest; "Metadata: Read-only" is added
@@ -37,8 +37,9 @@ if it's ever exposed.
 
 ## 2. Add it as a secret in each source repo (10×)
 
-The same token value goes into all ten repos. (`Gerrrt` is a personal account,
-so there are no org-level secrets to share it from — it has to be per-repo.)
+The same token value goes into all ten repos, added per-repo below. (`dotgibson`
+is an org, so you could alternatively set a single organization-level secret and
+skip the repeat — the per-repo setup keeps each source repo self-contained.)
 
 For each of `dotfiles-core`, `dotfiles-MacBook`, `dotfiles-Windows`,
 `dotfiles-Kali`, `dotfiles-Defense`, `dotfiles-Fedora`, `dotfiles-Arch`,
@@ -55,7 +56,7 @@ For each of `dotfiles-core`, `dotfiles-MacBook`, `dotfiles-Windows`,
 read -rs TOKEN   # paste github_pat_..., press Enter — kept off-screen & out of history
 
 for r in core MacBook Windows Kali Defense Fedora Arch openSUSE Alpine Gentoo; do
-  printf '%s' "$TOKEN" | gh secret set WEBHOOK_SECRET --repo "Gerrrt/dotfiles-$r" --body -
+  printf '%s' "$TOKEN" | gh secret set WEBHOOK_SECRET --repo "dotgibson/dotfiles-$r" --body -
   echo "set on dotfiles-$r"
 done
 unset TOKEN

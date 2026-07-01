@@ -32,7 +32,7 @@ const showSelect = channels.length > 1 || release.current !== 'main';
         </p>
         <p class="trybrowser">
           <span aria-hidden="true">⚡</span> Not ready to install?
-          <a href="https://codespaces.new/Gerrrt/dotfiles-Kali" target="_blank" rel="noopener">
+          <a href="https://codespaces.new/dotgibson/dotfiles-Kali" target="_blank" rel="noopener">
             Launch the Kali environment in your browser<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
           — a Codespace boots straight into the offensive shell, nothing to clone.
         </p>
@@ -144,7 +144,7 @@ const showSelect = channels.length > 1 || release.current !== 'main';
           pull the latest Core into a machine repo and re-wire links:
         </p>
         <CommandBlock
-          code={`git subtree pull --prefix=core https://github.com/Gerrrt/dotfiles-core main --squash
+          code={`git subtree pull --prefix=core https://github.com/dotgibson/dotfiles-core main --squash
 ./bootstrap.sh --links-only`}
         />
         <p class="muted" style="margin-bottom:0;">
@@ -354,8 +354,8 @@ const showSelect = channels.length > 1 || release.current !== 'main';
 
 <script>
   // Version switcher: rewrite every install command's clone ref to the selected
-  // release. Line-local and generic — only `git clone …Gerrrt/…` lines and the
-  // Windows `irm …/raw.githubusercontent.com/Gerrrt/<repo>/<ref>/…` one-liner are
+  // release. Line-local and generic — only `git clone …dotgibson/…` lines and the
+  // Windows `irm …/raw.githubusercontent.com/dotgibson/<repo>/<ref>/…` one-liner are
   // touched, so curated prose on every other line is left alone. Operates on the
   // per-line spans CommandBlock renders and keeps each copy button's data-code in
   // sync (Base.astro's copy handler reads that attribute).
@@ -371,13 +371,13 @@ const showSelect = channels.length > 1 || release.current !== 'main';
   const pinClone = (text: string, ref: string): string => {
     if (ref !== 'main' && !REF_OK.test(ref)) return text;
     let out = text.replace(
-      /\bgit clone\s+(?:--branch\s+\S+\s+)?(https:\/\/github\.com\/Gerrrt\/\S+)/g,
+      /\bgit clone\s+(?:--branch\s+\S+\s+)?(https:\/\/github\.com\/dotgibson\/\S+)/g,
       ref === 'main' ? 'git clone $1' : `git clone --branch ${ref} $1`
     );
     // Replace the ref SEGMENT after the repo (works for main, v-tags, or any
     // other ref), since the pristine source always carries the rolling 'main'.
     out = out.replace(
-      /(raw\.githubusercontent\.com\/Gerrrt\/[^/]+\/)[^/\s]+/g,
+      /(raw\.githubusercontent\.com\/dotgibson\/[^/]+\/)[^/\s]+/g,
       `$1${ref}`
     );
     return out;

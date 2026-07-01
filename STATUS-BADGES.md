@@ -20,22 +20,22 @@
 
 # CI status badges
 
-Live build status for every repository in the fleet. Owner: **Gerrrt**.
+Live build status for every repository in the fleet. Owner: **dotgibson**.
 
 ## 1. Markdown table
 
 | Repository | Layer | Build |
 | ---------- | ----- | ----- |
-| [dotfiles-core](https://github.com/Gerrrt/dotfiles-core) | Core | [![CI](https://github.com/Gerrrt/dotfiles-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-core/actions/workflows/ci.yml) |
-| [dotfiles-MacBook](https://github.com/Gerrrt/dotfiles-MacBook) | OS-native | [![CI](https://github.com/Gerrrt/dotfiles-MacBook/actions/workflows/ci.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-MacBook/actions/workflows/ci.yml) |
-| [dotfiles-Windows](https://github.com/Gerrrt/dotfiles-Windows) | Native host | [![CI](https://github.com/Gerrrt/dotfiles-Windows/actions/workflows/ci.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Windows/actions/workflows/ci.yml) |
-| [dotfiles-Kali](https://github.com/Gerrrt/dotfiles-Kali) | Role / offensive | [![lint](https://github.com/Gerrrt/dotfiles-Kali/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Kali/actions/workflows/lint.yml) |
-| [dotfiles-Defense](https://github.com/Gerrrt/dotfiles-Defense) | Role / defensive | [![lint](https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml) |
-| [dotfiles-Fedora](https://github.com/Gerrrt/dotfiles-Fedora) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-Fedora/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Fedora/actions/workflows/lint.yml) |
-| [dotfiles-Arch](https://github.com/Gerrrt/dotfiles-Arch) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-Arch/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Arch/actions/workflows/lint.yml) |
-| [dotfiles-openSUSE](https://github.com/Gerrrt/dotfiles-openSUSE) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-openSUSE/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-openSUSE/actions/workflows/lint.yml) |
-| [dotfiles-Alpine](https://github.com/Gerrrt/dotfiles-Alpine) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-Alpine/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Alpine/actions/workflows/lint.yml) |
-| [dotfiles-Gentoo](https://github.com/Gerrrt/dotfiles-Gentoo) | OS-native | [![lint](https://github.com/Gerrrt/dotfiles-Gentoo/actions/workflows/lint.yml/badge.svg)](https://github.com/Gerrrt/dotfiles-Gentoo/actions/workflows/lint.yml) |
+| [dotfiles-core](https://github.com/dotgibson/dotfiles-core) | Core | [![CI](https://github.com/dotgibson/dotfiles-core/actions/workflows/ci.yml/badge.svg)](https://github.com/dotgibson/dotfiles-core/actions/workflows/ci.yml) |
+| [dotfiles-MacBook](https://github.com/dotgibson/dotfiles-MacBook) | OS-native | [![CI](https://github.com/dotgibson/dotfiles-MacBook/actions/workflows/ci.yml/badge.svg)](https://github.com/dotgibson/dotfiles-MacBook/actions/workflows/ci.yml) |
+| [dotfiles-Windows](https://github.com/dotgibson/dotfiles-Windows) | Native host | [![CI](https://github.com/dotgibson/dotfiles-Windows/actions/workflows/ci.yml/badge.svg)](https://github.com/dotgibson/dotfiles-Windows/actions/workflows/ci.yml) |
+| [dotfiles-Kali](https://github.com/dotgibson/dotfiles-Kali) | Role / offensive | [![lint](https://github.com/dotgibson/dotfiles-Kali/actions/workflows/lint.yml/badge.svg)](https://github.com/dotgibson/dotfiles-Kali/actions/workflows/lint.yml) |
+| [dotfiles-Defense](https://github.com/dotgibson/dotfiles-Defense) | Role / defensive | [![lint](https://github.com/dotgibson/dotfiles-Defense/actions/workflows/lint.yml/badge.svg)](https://github.com/dotgibson/dotfiles-Defense/actions/workflows/lint.yml) |
+| [dotfiles-Fedora](https://github.com/dotgibson/dotfiles-Fedora) | OS-native | [![lint](https://github.com/dotgibson/dotfiles-Fedora/actions/workflows/lint.yml/badge.svg)](https://github.com/dotgibson/dotfiles-Fedora/actions/workflows/lint.yml) |
+| [dotfiles-Arch](https://github.com/dotgibson/dotfiles-Arch) | OS-native | [![lint](https://github.com/dotgibson/dotfiles-Arch/actions/workflows/lint.yml/badge.svg)](https://github.com/dotgibson/dotfiles-Arch/actions/workflows/lint.yml) |
+| [dotfiles-openSUSE](https://github.com/dotgibson/dotfiles-openSUSE) | OS-native | [![lint](https://github.com/dotgibson/dotfiles-openSUSE/actions/workflows/lint.yml/badge.svg)](https://github.com/dotgibson/dotfiles-openSUSE/actions/workflows/lint.yml) |
+| [dotfiles-Alpine](https://github.com/dotgibson/dotfiles-Alpine) | OS-native | [![lint](https://github.com/dotgibson/dotfiles-Alpine/actions/workflows/lint.yml/badge.svg)](https://github.com/dotgibson/dotfiles-Alpine/actions/workflows/lint.yml) |
+| [dotfiles-Gentoo](https://github.com/dotgibson/dotfiles-Gentoo) | OS-native | [![lint](https://github.com/dotgibson/dotfiles-Gentoo/actions/workflows/lint.yml/badge.svg)](https://github.com/dotgibson/dotfiles-Gentoo/actions/workflows/lint.yml) |
 
 ## 2. HTML grid block (Astro showcase)
 
@@ -51,103 +51,103 @@ component.
 
   <div class="ci-badges__grid">
     <!-- Core -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-core/actions/workflows/ci.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-core/actions/workflows/ci.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">◆ dotfiles-core</span>
         <span class="ci-card__layer tone-purple">Core</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-core CI status"
-        src="https://github.com/Gerrrt/dotfiles-core/actions/workflows/ci.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-core/actions/workflows/ci.yml/badge.svg" />
     </a>
 
     <!-- MacBook -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-MacBook/actions/workflows/ci.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-MacBook/actions/workflows/ci.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">⌘ dotfiles-MacBook</span>
         <span class="ci-card__layer tone-blue">OS-native</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-MacBook CI status"
-        src="https://github.com/Gerrrt/dotfiles-MacBook/actions/workflows/ci.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-MacBook/actions/workflows/ci.yml/badge.svg" />
     </a>
 
     <!-- Windows -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Windows/actions/workflows/ci.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-Windows/actions/workflows/ci.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">⊞ dotfiles-Windows</span>
         <span class="ci-card__layer tone-cyan">Native host</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Windows CI status"
-        src="https://github.com/Gerrrt/dotfiles-Windows/actions/workflows/ci.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-Windows/actions/workflows/ci.yml/badge.svg" />
     </a>
 
     <!-- Kali -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Kali/actions/workflows/lint.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-Kali/actions/workflows/lint.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">⚔ dotfiles-Kali</span>
         <span class="ci-card__layer tone-red">Role / offensive</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Kali lint status"
-        src="https://github.com/Gerrrt/dotfiles-Kali/actions/workflows/lint.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-Kali/actions/workflows/lint.yml/badge.svg" />
     </a>
 
     <!-- Defense -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-Defense/actions/workflows/lint.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">⛨ dotfiles-Defense</span>
         <span class="ci-card__layer tone-cyan">Role / defensive</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Defense lint status"
-        src="https://github.com/Gerrrt/dotfiles-Defense/actions/workflows/lint.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-Defense/actions/workflows/lint.yml/badge.svg" />
     </a>
 
     <!-- Fedora -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Fedora/actions/workflows/lint.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-Fedora/actions/workflows/lint.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">◉ dotfiles-Fedora</span>
         <span class="ci-card__layer tone-blue">OS-native</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Fedora lint status"
-        src="https://github.com/Gerrrt/dotfiles-Fedora/actions/workflows/lint.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-Fedora/actions/workflows/lint.yml/badge.svg" />
     </a>
 
     <!-- Arch -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Arch/actions/workflows/lint.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-Arch/actions/workflows/lint.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">▲ dotfiles-Arch</span>
         <span class="ci-card__layer tone-blue">OS-native</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Arch lint status"
-        src="https://github.com/Gerrrt/dotfiles-Arch/actions/workflows/lint.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-Arch/actions/workflows/lint.yml/badge.svg" />
     </a>
 
     <!-- openSUSE -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-openSUSE/actions/workflows/lint.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-openSUSE/actions/workflows/lint.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">❖ dotfiles-openSUSE</span>
         <span class="ci-card__layer tone-blue">OS-native</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-openSUSE lint status"
-        src="https://github.com/Gerrrt/dotfiles-openSUSE/actions/workflows/lint.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-openSUSE/actions/workflows/lint.yml/badge.svg" />
     </a>
 
     <!-- Alpine -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Alpine/actions/workflows/lint.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-Alpine/actions/workflows/lint.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">❄ dotfiles-Alpine</span>
         <span class="ci-card__layer tone-blue">OS-native</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Alpine lint status"
-        src="https://github.com/Gerrrt/dotfiles-Alpine/actions/workflows/lint.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-Alpine/actions/workflows/lint.yml/badge.svg" />
     </a>
 
     <!-- Gentoo -->
-    <a class="ci-card" href="https://github.com/Gerrrt/dotfiles-Gentoo/actions/workflows/lint.yml" target="_blank" rel="noopener">
+    <a class="ci-card" href="https://github.com/dotgibson/dotfiles-Gentoo/actions/workflows/lint.yml" target="_blank" rel="noopener">
       <div class="ci-card__head">
         <span class="ci-card__name">◢ dotfiles-Gentoo</span>
         <span class="ci-card__layer tone-blue">OS-native</span>
       </div>
       <img class="ci-card__badge" loading="lazy" alt="dotfiles-Gentoo lint status"
-        src="https://github.com/Gerrrt/dotfiles-Gentoo/actions/workflows/lint.yml/badge.svg" />
+        src="https://github.com/dotgibson/dotfiles-Gentoo/actions/workflows/lint.yml/badge.svg" />
     </a>
   </div>
 </section>
